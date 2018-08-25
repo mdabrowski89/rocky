@@ -1,0 +1,6 @@
+<resources>
+    <!--
+    TODO: Add google maps key before releasing this awesome app
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">YOUR_KEY_HERE</string>
+</resources>
