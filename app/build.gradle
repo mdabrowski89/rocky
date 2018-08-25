@@ -44,9 +44,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     implementation Dependencies.kotlinStdLib
     implementation Dependencies.appcompatLib
     implementation Dependencies.playServiceMapsLib
+    implementation Dependencies.cardViewLib
+
+    implementation Dependencies.rxKotlinLib
+    implementation Dependencies.rxBinding
+    implementation Dependencies.rxRelay
 
     testImplementation Dependencies.junitLib
     androidTestImplementation Dependencies.testRunner
