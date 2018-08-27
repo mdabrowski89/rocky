@@ -50,6 +50,9 @@ dependencies {
     implementation Dependencies.playServiceMapsLib
     implementation Dependencies.cardViewLib
 
+    implementation Dependencies.lifecycleExtensionsLib
+    implementation Dependencies.lifecycleViewModelsLib
+
     implementation Dependencies.rxKotlinLib
     implementation Dependencies.rxBinding
     implementation Dependencies.rxRelay

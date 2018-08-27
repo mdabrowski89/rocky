@@ -9,6 +9,8 @@ object Versions {
     const val appCompat = "28.0.0-alpha1"
     const val playServiceMaps = "15.0.1"
 
+    const val lifecycle = "1.1.1"
+
     const val rxKotlin = "2.2.0"
     const val rxBinding = "2.1.1"
     const val rxRelay = "2.0.0"
@@ -26,6 +28,9 @@ object Dependencies {
     const val appcompatLib = "com.android.support:appcompat-v7:${Versions.appCompat}"
     const val cardViewLib = "com.android.support:cardview-v7:${Versions.appCompat}"
     const val playServiceMapsLib = "com.google.android.gms:play-services-maps:${Versions.playServiceMaps}"
+
+    const val lifecycleExtensionsLib = "android.arch.lifecycle:extensions:${Versions.lifecycle}"
+    const val lifecycleViewModelsLib = "android.arch.lifecycle:viewmodel:${Versions.lifecycle}"
 
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"
     const val rxBinding = "com.jakewharton.rxbinding2:rxbinding:${Versions.rxBinding}"
