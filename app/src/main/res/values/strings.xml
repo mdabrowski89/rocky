@@ -1,3 +1,4 @@
 <resources>
     <string name="map_query_input_hint">Type a place…</string>
+    <string name="map_place_loading_error">Unable to load places, check Internet connection…</string>
 </resources>

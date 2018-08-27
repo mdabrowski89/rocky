@@ -45,6 +45,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':domain')
+
     implementation Dependencies.kotlinStdLib
     implementation Dependencies.appcompatLib
     implementation Dependencies.playServiceMapsLib

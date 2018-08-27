@@ -6,9 +6,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class PlacesRepository {
+class PlacesRepositoryImpl: PlaceRepository {
 
-    fun getPlaces(): Observable<List<Place>> {
+    override fun getPlaces(): Observable<List<Place>> {
         val random = Random()
         if (random.nextBoolean()) {
             return Observable.error(Throwable())

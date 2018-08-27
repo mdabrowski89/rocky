@@ -17,8 +17,8 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
-import pl.mobite.rocky.dpToPx
 import pl.mobite.rocky.ui.map.MapIntent.*
+import pl.mobite.rocky.utils.dpToPx
 
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -57,6 +57,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onStop()
     }
 
+    private fun intents(): Observable<MapIntent> {
+        return Observable.merge(listOf(
+                mapReadyRelay,
+                searchIntent(),
+                errorDisplayedRelay,
+                allPlacesGoneRelay))
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -77,6 +85,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapReadyRelay.accept(MapReadyIntent)
     }
 
+    private fun searchIntent(): Observable<SearchPlacesIntent> {
+        return RxTextView.editorActionEvents(queryInput) { action -> action.actionId() == EditorInfo.IME_ACTION_SEARCH }
+                .map { SearchPlacesIntent(queryInput.text.toString()) }
+    }
+
     private fun render(state: MapViewState) {
         with(state) {
 
@@ -89,8 +102,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 return
             }
 
-            /* Nothing to display if don't have places timestamp */
-            if (placesTimestamp == null) {
+            /* Do not change markers if no timestamp or if loading */
+            if (placesTimestamp == null || isLoading) {
                 return
             }
 
@@ -98,7 +111,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             googleMap?.let { map ->
                 handler.removeCallbacksAndMessages(null)
                 map.clear()
-                val displayingOffset = System.currentTimeMillis() - placesTimestamp
+                val displayingOffset = System.currentTimeMillis() - placesTimestamp!!
                 val placesToDisplay = places.filter { place -> place.displayingTime() - displayingOffset > 0 }
                 if (placesToDisplay.isEmpty()) {
                     allPlacesGoneRelay.accept(AllPlacesGoneIntent)
@@ -125,18 +138,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-    }
-
-    private fun intents(): Observable<MapIntent> {
-        return Observable.merge(listOf(
-                mapReadyRelay,
-                searchIntent(),
-                errorDisplayedRelay))
-    }
-
-    private fun searchIntent(): Observable<SearchPlacesIntent> {
-        return RxTextView.editorActionEvents(queryInput) { action -> action.actionId() == EditorInfo.IME_ACTION_SEARCH }
-                .map { SearchPlacesIntent(queryInput.text.toString()) }
     }
 }
 
