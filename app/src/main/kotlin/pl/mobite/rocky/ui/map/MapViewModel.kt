@@ -3,7 +3,7 @@ package pl.mobite.rocky.ui.map
 import android.arch.lifecycle.ViewModel
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
-import pl.mobite.rocky.data.repositories.PlacesRepositoryImpl
+import pl.mobite.rocky.data.repositories.place.PlaceRepositoryImpl
 import pl.mobite.rocky.utils.AndroidSchedulerProvider
 
 
@@ -13,7 +13,7 @@ class MapViewModel: ViewModel() {
 
     private val mapViewStateSource = MapViewStateSourceFactory.create(
             mapIntentsSource,
-            PlacesRepositoryImpl(),
+            PlaceRepositoryImpl(),
             AndroidSchedulerProvider.instance
     )
 

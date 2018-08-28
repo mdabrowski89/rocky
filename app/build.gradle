@@ -56,8 +56,12 @@ dependencies {
     implementation Dependencies.lifecycleViewModelsLib
 
     implementation Dependencies.rxKotlinLib
-    implementation Dependencies.rxBinding
-    implementation Dependencies.rxRelay
+    implementation Dependencies.rxBindingLib
+    implementation Dependencies.rxRelayLib
+
+    implementation Dependencies.retrofitLib
+    implementation Dependencies.retrofitGsonConverterLib
+    implementation Dependencies.retrofitRxJava2AdapterLib
 
     testImplementation Dependencies.junitLib
     androidTestImplementation Dependencies.testRunner

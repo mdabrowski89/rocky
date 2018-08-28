@@ -6,7 +6,7 @@ object Versions {
     const val compiledSdk = 28
     const val targetSdk = compiledSdk
 
-    const val appCompat = "28.0.0-alpha1"
+    const val appCompat = "28.0.0-alpha3"
     const val playServiceMaps = "15.0.1"
 
     const val lifecycle = "1.1.1"
@@ -14,6 +14,8 @@ object Versions {
     const val rxKotlin = "2.2.0"
     const val rxBinding = "2.1.1"
     const val rxRelay = "2.0.0"
+
+    const val retrofit = "2.4.0"
 
     // test
     const val junit = "4.12"
@@ -33,8 +35,12 @@ object Dependencies {
     const val lifecycleViewModelsLib = "android.arch.lifecycle:viewmodel:${Versions.lifecycle}"
 
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"
-    const val rxBinding = "com.jakewharton.rxbinding2:rxbinding:${Versions.rxBinding}"
-    const val rxRelay = "com.jakewharton.rxrelay2:rxrelay:${Versions.rxRelay}"
+    const val rxBindingLib = "com.jakewharton.rxbinding2:rxbinding:${Versions.rxBinding}"
+    const val rxRelayLib = "com.jakewharton.rxrelay2:rxrelay:${Versions.rxRelay}"
+
+    const val retrofitLib = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val retrofitGsonConverterLib = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    const val retrofitRxJava2AdapterLib = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

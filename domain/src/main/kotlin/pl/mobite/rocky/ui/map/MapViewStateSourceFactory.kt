@@ -6,7 +6,7 @@ import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.utils.SchedulerProvider
 
 
-class MapViewStateSourceFactory {
+class MapViewStateSourceFactory private constructor(){
 
     companion object {
 

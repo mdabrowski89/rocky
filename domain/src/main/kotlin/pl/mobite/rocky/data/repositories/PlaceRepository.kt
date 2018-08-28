@@ -1,10 +1,10 @@
 package pl.mobite.rocky.data.repositories
 
-import io.reactivex.Observable
+import io.reactivex.Single
 import pl.mobite.rocky.data.models.Place
 
 
 interface PlaceRepository {
 
-    fun getPlaces(): Observable<List<Place>>
+    fun getPlacesFrom1990(query: String): Single<List<Place>>
 }

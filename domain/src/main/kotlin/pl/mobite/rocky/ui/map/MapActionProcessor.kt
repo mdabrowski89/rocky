@@ -27,8 +27,9 @@ class MapActionProcessor(
     }
 
     private val loadPlacesProcessor = ObservableTransformer { actions: Observable<MapAction.LoadPlacesAction> ->
-        actions.switchMap {
-            placesRepository.getPlaces()
+        actions.switchMap { action ->
+            placesRepository.getPlacesFrom1990(action.query)
+                    .toObservable()
                     .map { places -> MapResult.LoadPlacesResult.Success(places) }
                     .cast(MapResult.LoadPlacesResult::class.java)
                     .onErrorReturn { t -> MapResult.LoadPlacesResult.Failure(t) }

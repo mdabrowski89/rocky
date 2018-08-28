@@ -17,7 +17,9 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.data.models.PlaceCords
 import pl.mobite.rocky.ui.map.MapIntent.*
+import pl.mobite.rocky.utils.ToMuchDataToFetchException
 import pl.mobite.rocky.utils.dpToPx
 
 
@@ -97,7 +99,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             /* Handle error - display message and clear error */
             if (error != null) {
-                Toast.makeText(this@MapActivity, "Unable to load places", Toast.LENGTH_SHORT).show()
+                val messageRes = if (error is ToMuchDataToFetchException) {
+                    R.string.map_api_to_much_data_error
+                } else {
+                    R.string.map_api_loading_error
+                }
+                Toast.makeText(this@MapActivity, messageRes, Toast.LENGTH_SHORT).show()
                 errorDisplayedRelay.accept(ErrorDisplayedIntent)
                 return
             }
@@ -111,6 +118,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             googleMap?.let { map ->
                 handler.removeCallbacksAndMessages(null)
                 map.clear()
+                // TODO: if places to display list is empty show message
                 val displayingOffset = System.currentTimeMillis() - placesTimestamp!!
                 val placesToDisplay = places.filter { place -> place.displayingTime() - displayingOffset > 0 }
                 if (placesToDisplay.isEmpty()) {
@@ -142,7 +150,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 }
 
 fun Place.toMarker(): MarkerOptions {
-    return MarkerOptions().position(LatLng(lat, lng)).title(name)
+    return MarkerOptions().position(cords.toLatLng()).title(name)
+}
+
+fun PlaceCords.toLatLng(): LatLng {
+    return LatLng(lat, lng)
 }
 
 fun Place.displayingTime(): Long {
