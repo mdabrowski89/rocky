@@ -20,7 +20,6 @@ import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.ui.map.MapIntent.*
 import pl.mobite.rocky.utils.CustomTextWatcher
-import pl.mobite.rocky.utils.ToMuchDataToFetchException
 import pl.mobite.rocky.utils.dpToPx
 import pl.mobite.rocky.utils.setVisibleOrGone
 
@@ -171,12 +170,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showErrorMessage(error: Throwable) {
-        val messageRes = if (error is ToMuchDataToFetchException) {
-            R.string.map_api_to_much_data_error
-        } else {
-            R.string.map_api_loading_error
-        }
-        Toast.makeText(this@MapActivity, messageRes, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MapActivity, R.string.map_api_loading_error, Toast.LENGTH_SHORT).show()
     }
 
     private fun Place.toMarker(): MarkerOptions {

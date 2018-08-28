@@ -17,9 +17,6 @@ interface MusicBrainzService {
 
     companion object {
 
-        const val PAGE_LIMIT = 20
-
-        /* Due to server request limitations this is the maximum page number which can be fetched at once */
-        const val MAX_API_PAGE = 14
+        const val PAGE_LIMIT = 100
     }
 }
