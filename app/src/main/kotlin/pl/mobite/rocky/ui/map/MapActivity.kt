@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import com.google.android.gms.maps.*
@@ -18,8 +19,10 @@ import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.ui.map.MapIntent.*
+import pl.mobite.rocky.utils.CustomTextWatcher
 import pl.mobite.rocky.utils.ToMuchDataToFetchException
 import pl.mobite.rocky.utils.dpToPx
+import pl.mobite.rocky.utils.setVisibleOrGone
 
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -44,6 +47,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        clearButton.setOnClickListener { queryInput.setText("") }
+        queryInput.addTextChangedListener(object : CustomTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                clearButton.setVisibleOrGone(queryInput.text.isNotEmpty())
+            }
+        })
     }
 
     override fun onStart() {
@@ -69,15 +79,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 allPlacesGoneRelay))
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         this.googleMap?.setOnMarkerClickListener { marker ->
@@ -90,7 +91,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchIntent(): Observable<SearchPlacesIntent> {
-        return RxTextView.editorActionEvents(queryInput) { action -> action.actionId() == EditorInfo.IME_ACTION_SEARCH }
+        return RxTextView.editorActionEvents(queryInput) { action ->
+            action.actionId() == EditorInfo.IME_ACTION_SEARCH && queryInput.text.toString().isNotBlank()}
                 .map { SearchPlacesIntent(queryInput.text.toString()) }
     }
 
@@ -98,6 +100,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         with(state) {
 
             queryInput.isEnabled = googleMap != null && !isLoading
+            queryInput.text.toString().let {queryText ->
+                clearButton.setVisibleOrGone(queryText.isNotEmpty() && !isLoading)
+                queryProgress.setVisibleOrGone(queryText.isNotEmpty() && isLoading)
+            }
 
             /* Handle error - display message and clear error */
             error?.let {
@@ -140,8 +146,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     boundsBuilder.include(marker.position)
                 } }
 
-                /* Update camera only if we are displaying places right after search */
-                if (places.size == placesToDisplay.size) {
+                /* Update camera only if we are displaying places right after search,
+                 * filter out places which will not be displayed anyway  */
+                if (places.filter { it.getDisplayingTime() > 0 }.size == placesToDisplay.size) {
                     val cameraUpdate: CameraUpdate? = when {
                         places.size == 1 -> CameraUpdateFactory.newLatLng(places.first().toMarker().position)
                         places.size > 1 -> CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt())
