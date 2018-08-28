@@ -1,5 +1,6 @@
 <resources>
     <string name="map_query_input_hint">Type a place…</string>
+    <string name="map_api_empty_list">No places found</string>
     <string name="map_api_loading_error">Unable to perform request…</string>
     <string name="map_api_to_much_data_error">To much data to fetch, please provide more specific request</string>
 </resources>

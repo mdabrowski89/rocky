@@ -17,7 +17,6 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
-import pl.mobite.rocky.data.models.PlaceCords
 import pl.mobite.rocky.ui.map.MapIntent.*
 import pl.mobite.rocky.utils.ToMuchDataToFetchException
 import pl.mobite.rocky.utils.dpToPx
@@ -30,6 +29,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val mapReadyRelay = PublishRelay.create<MapReadyIntent>()
     private val errorDisplayedRelay = PublishRelay.create<ErrorDisplayedIntent>()
     private val allPlacesGoneRelay = PublishRelay.create<AllPlacesGoneIntent>()
+    private val placeClickedRelay = PublishRelay.create<Place>()
 
     private val handler = Handler()
     private lateinit var disposable: CompositeDisposable
@@ -51,6 +51,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         disposable = CompositeDisposable()
         disposable.add(viewModel.states().subscribe(this::render))
         viewModel.processIntents(intents())
+
+        disposable.addAll(placeClickedRelay.subscribe { place -> showPlaceDetails(place)})
     }
 
     override fun onStop() {
@@ -80,7 +82,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         this.googleMap = googleMap
         this.googleMap?.setOnMarkerClickListener { marker ->
             (marker.tag as? Place?)?.let { place ->
-                Toast.makeText(this@MapActivity, place.name, Toast.LENGTH_SHORT).show()
+                placeClickedRelay.accept(place)
             }
             true
         }
@@ -98,13 +100,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             queryInput.isEnabled = googleMap != null && !isLoading
 
             /* Handle error - display message and clear error */
-            if (error != null) {
-                val messageRes = if (error is ToMuchDataToFetchException) {
-                    R.string.map_api_to_much_data_error
-                } else {
-                    R.string.map_api_loading_error
-                }
-                Toast.makeText(this@MapActivity, messageRes, Toast.LENGTH_SHORT).show()
+            error?.let {
+                showErrorMessage(it)
                 errorDisplayedRelay.accept(ErrorDisplayedIntent)
                 return
             }
@@ -116,30 +113,38 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             /* Put markers on the map */
             googleMap?.let { map ->
+                if (places.isEmpty()) {
+                    showEmptyListMessage()
+                    allPlacesGoneRelay.accept(AllPlacesGoneIntent)
+                    return
+                }
+
                 handler.removeCallbacksAndMessages(null)
                 map.clear()
-                // TODO: if places to display list is empty show message
+
                 val displayingOffset = System.currentTimeMillis() - placesTimestamp!!
-                val placesToDisplay = places.filter { place -> place.displayingTime() - displayingOffset > 0 }
+                val placesToDisplay = places
+                        .map { place -> PlaceToDisplay(place, place.getDisplayingTime(displayingOffset)) }
+                        .filter { placeToDisplay -> placeToDisplay.displayingTimeInMills > 0 }
+
                 if (placesToDisplay.isEmpty()) {
                     allPlacesGoneRelay.accept(AllPlacesGoneIntent)
                     return
                 }
+
                 val boundsBuilder by lazy { LatLngBounds.builder() }
-                placesToDisplay.forEach { place ->
+                placesToDisplay.forEach { with(it) {
                     val marker = map.addMarker(place.toMarker())
-                    boundsBuilder.include(marker.position)
                     marker.tag = place
-                    handler.postDelayed({
-                        marker.remove()
-                    }, place.displayingTime() - displayingOffset)
-                }
+                    handler.postDelayed({ marker.remove() }, displayingTimeInMills)
+                    boundsBuilder.include(marker.position)
+                } }
 
                 /* Update camera only if we are displaying places right after search */
                 if (places.size == placesToDisplay.size) {
                     val cameraUpdate: CameraUpdate? = when {
-                        placesToDisplay.size == 1 -> CameraUpdateFactory.newLatLng(placesToDisplay.first().toMarker().position)
-                        placesToDisplay.size > 1 -> CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt())
+                        places.size == 1 -> CameraUpdateFactory.newLatLng(places.first().toMarker().position)
+                        places.size > 1 -> CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt())
                         else -> null
                     }
                     cameraUpdate?.let { map.moveCamera(it) }
@@ -147,16 +152,33 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-}
 
-fun Place.toMarker(): MarkerOptions {
-    return MarkerOptions().position(cords.toLatLng()).title(name)
-}
+    private fun showPlaceDetails(place: Place) {
+        with(place) {
+            Toast.makeText(this@MapActivity, "$name, $openYear", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-fun PlaceCords.toLatLng(): LatLng {
-    return LatLng(lat, lng)
-}
+    private fun showEmptyListMessage() {
+        Toast.makeText(this@MapActivity, R.string.map_api_empty_list, Toast.LENGTH_SHORT).show()
+    }
 
-fun Place.displayingTime(): Long {
-    return (openYear - 1990) * 1000L
+    private fun showErrorMessage(error: Throwable) {
+        val messageRes = if (error is ToMuchDataToFetchException) {
+            R.string.map_api_to_much_data_error
+        } else {
+            R.string.map_api_loading_error
+        }
+        Toast.makeText(this@MapActivity, messageRes, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun Place.toMarker(): MarkerOptions {
+        return MarkerOptions().position(LatLng(cords.lat, cords.lng)).title(name)
+    }
+
+    private fun Place.getDisplayingTime(displayOffset: Long = 0): Long {
+        return (openYear - 1990) * 1000L - displayOffset
+    }
+
+    private data class PlaceToDisplay(val place: Place, val displayingTimeInMills: Long)
 }

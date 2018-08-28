@@ -13,9 +13,9 @@ import pl.mobite.rocky.utils.ToMuchDataToFetchException
 
 class PlaceApiService {
 
-    fun fetchAllPlaces(query: String): Single<List<PlaceApi>> {
+    fun fetchAllPlacesFrom1990(query: String): Single<List<PlaceApi>> {
         val service = retrofit.create(MusicBrainzService::class.java)
-        return service.getPlaces(query)
+        return service.getPlaces(query.withYearFilter())
                 /* Create stream of request to fetch all pages */
                 .flatMapObservable { placesApi ->
                     val list = mutableListOf(PlacesApiRequest(0, placesApi))
@@ -36,7 +36,7 @@ class PlaceApiService {
                         if (placeApiResponse != null) {
                             Single.just(placeApiResponse.places ?: emptyList())
                         } else {
-                            service.getPlaces(query, offset)
+                            service.getPlaces(query.withYearFilter(), offset)
                                     .map { placesApiResponse -> placesApiResponse.places ?: emptyList() }
                         }
                     }
@@ -50,6 +50,8 @@ class PlaceApiService {
                     return@map places
                 }
     }
+
+    private fun String.withYearFilter() = "$this AND begin:[1990 TO 2200]"
 
     private data class PlacesApiRequest(val offset: Int, val placeApiResponse: PlaceApiResponse?)
 }
