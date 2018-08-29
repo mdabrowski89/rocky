@@ -3,14 +3,15 @@ package pl.mobite.rocky.data.remote.services
 import io.reactivex.Observable
 import io.reactivex.Single
 import pl.mobite.rocky.data.remote.MusicBrainzService
-import pl.mobite.rocky.data.remote.MusicBrainzService.Companion.PAGE_LIMIT
 import pl.mobite.rocky.data.remote.models.PlaceApi
 import pl.mobite.rocky.data.remote.models.PlaceApiResponse
+import pl.mobite.rocky.utils.PAGE_LIMIT
 import java.util.concurrent.TimeUnit
 
 
 class PlaceApiServiceImpl(
         private val musicBrainzServiceProvider: () -> MusicBrainzService,
+        private val pageLimit: Int = PAGE_LIMIT,
         private val requestDelay: Long = 600
 ): PlaceApiService {
 
@@ -18,12 +19,12 @@ class PlaceApiServiceImpl(
     private val musicBrainzService by lazy { musicBrainzServiceProvider.invoke() }
 
     override fun fetchAllPlacesFrom1990(query: String): Single<List<PlaceApi>> {
-        return musicBrainzService.getPlaces(query.withYearFilter())
+        return musicBrainzService.getPlaces(query.withYearFilter(), 0, pageLimit)
                 /* Create stream of request to fetch all pages */
                 .flatMapObservable { placesApi ->
                     val list = mutableListOf(PlacesApiRequest(0, placesApi))
                     placesApi.count?.let { count ->
-                        for (offset in PAGE_LIMIT..count step PAGE_LIMIT) {
+                        for (offset in pageLimit until count step pageLimit) {
                             list.add(PlacesApiRequest(offset))
                         }
                     }
@@ -35,7 +36,7 @@ class PlaceApiServiceImpl(
                         if (placeApiResponse != null) {
                             Observable.just(placeApiResponse.places ?: emptyList())
                         } else {
-                            musicBrainzService.getPlaces(query.withYearFilter(), offset)
+                            musicBrainzService.getPlaces(query.withYearFilter(), offset, pageLimit)
                                     .toObservable()
                                     /* delay between each requests is needed in order to not get throw out from the server */
                                     .delay(requestDelay, TimeUnit.MILLISECONDS)

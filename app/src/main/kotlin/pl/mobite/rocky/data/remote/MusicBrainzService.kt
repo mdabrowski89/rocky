@@ -11,12 +11,7 @@ interface MusicBrainzService {
     @GET("place/?fmt=json")
     fun getPlaces(
             @Query("query") query: String,
-            @Query("offset") offset: Int = 0,
-            @Query("limit") limit: Int = PAGE_LIMIT
+            @Query("offset") offset: Int,
+            @Query("limit") limit: Int
     ): Single<PlaceApiResponse>
-
-    companion object {
-
-        const val PAGE_LIMIT = 100
-    }
 }

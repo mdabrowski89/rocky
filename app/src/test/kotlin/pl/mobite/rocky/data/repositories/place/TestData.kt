@@ -1,6 +1,5 @@
 package pl.mobite.rocky.data.repositories.place
 
-import org.junit.Before
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.data.models.PlaceCords
 import pl.mobite.rocky.data.remote.models.CoordinatesApi
@@ -22,8 +21,6 @@ val placeApiInvalid6 = createSamplePlaceAPI("Sample name 1", null, LifeSpanApi("
 
 val placeApiList = listOf(placeApiInvalid1, placeApiInvalid2, placeApi, placeApiInvalid3)
 val placeListExpected = listOf(placeExpected)
-
-@Before
 
 private fun createSamplePlaceAPI(name: String?, lat: String?, lng: String?, begin: String?) =
         createSamplePlaceAPI(name, CoordinatesApi(lat, lng), LifeSpanApi(begin, null, null))

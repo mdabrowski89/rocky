@@ -31,11 +31,13 @@ class MapViewModelTest {
     fun testMapReadyIntent() {
         mapViewModel.processIntents(Observable.just(MapIntent.MapReadyIntent))
 
+        testObserver.assertValueCount(2)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) {
             it == initialState.copy(reRenderFlag = !initialState.reRenderFlag)
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     @Test
@@ -44,13 +46,14 @@ class MapViewModelTest {
 
         mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
 
+        testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
-
         testObserver.assertValueAt(2) { with(it) {
             !isLoading && places == places && placesTimestamp != null && error == null
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     @Test
@@ -62,17 +65,17 @@ class MapViewModelTest {
                 MapIntent.AllPlacesGoneIntent
         ))
 
+        testObserver.assertValueCount(4)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
-
         testObserver.assertValueAt(2) { with(it) {
             !isLoading && places == places && placesTimestamp != null && error == null
         }}
-
         testObserver.assertValueAt(3) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     @Test
@@ -81,13 +84,14 @@ class MapViewModelTest {
 
         mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
 
+        testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
-
         testObserver.assertValueAt(2) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp != null && error == null
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     @Test
@@ -96,13 +100,14 @@ class MapViewModelTest {
 
         mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
 
+        testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
-
         testObserver.assertValueAt(2) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     @Test
@@ -114,17 +119,17 @@ class MapViewModelTest {
                 MapIntent.ErrorDisplayedIntent
         ))
 
+        testObserver.assertValueCount(4)
         testObserver.assertValueAt(0) { it == initialState }
-
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
-
         testObserver.assertValueAt(2) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
         }}
-
         testObserver.assertValueAt(3) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 
     /* Test the fallowing scenario
@@ -149,13 +154,12 @@ class MapViewModelTest {
                 MapIntent.ErrorDisplayedIntent
         ))
 
+        testObserver.assertValueCount(8)
         testObserver.assertValueAt(0) { it == initialState }
-
         /* Map ready - re render state */
         testObserver.assertValueAt(1) { with(it) {
             it == initialState.copy(reRenderFlag = !initialState.reRenderFlag)
         }}
-
         /* First query loading */
         testObserver.assertValueAt(2) { with(it) { isLoading && error == null } }
 
@@ -163,25 +167,23 @@ class MapViewModelTest {
         testObserver.assertValueAt(3) { with(it) {
             !isLoading && places == places && placesTimestamp != null && error == null
         }}
-
         /* Second query loading */
         testObserver.assertValueAt(4) { with(it) {
             isLoading && places == places && placesTimestamp != null && error == null
         }}
-
         /* Second query error */
         testObserver.assertValueAt(5) { with(it) {
             !isLoading && places == places && placesTimestamp != null && error == testError
         }}
-
         /* All makers disappear */
         testObserver.assertValueAt(6) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
         }}
-
         /* Error message disappear */
         testObserver.assertValueAt(7) { with(it) {
             !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
         }}
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
     }
 }
