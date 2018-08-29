@@ -13,7 +13,7 @@ android {
         targetSdkVersion Versions.targetSdk
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "pl.mobite.rocky.MockTestRunner"
     }
 
     sourceSets {
@@ -67,7 +67,12 @@ dependencies {
     testImplementation Dependencies.mockitoLib
 
     androidTestImplementation Dependencies.testRunner
+    androidTestImplementation Dependencies.testRules
     androidTestImplementation Dependencies.espressoLib
+    androidTestImplementation('com.squareup.rx.idler:rx2-idler:0.9.0') {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+    }
 }
 
 task changeApkName() {

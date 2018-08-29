@@ -3,7 +3,7 @@ package pl.mobite.rocky
 import android.app.Application
 
 
-class RockyApp: Application() {
+open class RockyApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
