@@ -12,7 +12,7 @@ class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
                     is MapResult.LoadPlacesResult.InFlight ->
                         prevState.copy(isLoading = true, error = null)
                     is MapResult.LoadPlacesResult.Success ->
-                        prevState.copy(isLoading = false, places = result.places, placesTimestamp = System.currentTimeMillis())
+                        prevState.copy(isLoading = false, error = null, places = result.places, placesTimestamp = result.timestamp)
                     is MapResult.LoadPlacesResult.Failure ->
                         prevState.copy(isLoading = false, error = result.throwable)
                 }

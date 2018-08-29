@@ -20,6 +20,7 @@ import pl.mobite.rocky.R
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.ui.map.MapIntent.*
 import pl.mobite.rocky.utils.CustomTextWatcher
+import pl.mobite.rocky.utils.RockyViewModelFactory
 import pl.mobite.rocky.utils.dpToPx
 import pl.mobite.rocky.utils.setVisibleOrGone
 
@@ -37,7 +38,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var disposable: CompositeDisposable
 
     private val viewModel: MapViewModel by lazy {
-        ViewModelProviders.of(this).get(MapViewModel::class.java)
+        ViewModelProviders.of(this, RockyViewModelFactory.instance).get(MapViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -64,6 +64,8 @@ dependencies {
     implementation Dependencies.retrofitRxJava2AdapterLib
 
     testImplementation Dependencies.junitLib
+    testImplementation Dependencies.mockitoLib
+
     androidTestImplementation Dependencies.testRunner
     androidTestImplementation Dependencies.espressoLib
 }

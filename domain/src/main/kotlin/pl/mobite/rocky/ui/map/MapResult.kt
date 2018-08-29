@@ -13,7 +13,7 @@ sealed class MapResult {
 
         data class Failure(val throwable: Throwable): LoadPlacesResult()
 
-        data class Success(val places: List<Place>): LoadPlacesResult()
+        data class Success(val places: List<Place>, val timestamp: Long): LoadPlacesResult()
     }
 
     object AllPlacesGoneResult: MapResult()

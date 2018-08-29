@@ -19,6 +19,7 @@ object Versions {
 
     // test
     const val junit = "4.12"
+    const val mockito = "2.21.0"
     const val testRunner = "1.0.2"
     const val espresso = "3.0.2"
 }
@@ -44,6 +45,7 @@ object Dependencies {
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"
+    const val mockitoLib = "org.mockito:mockito-core:${Versions.mockito}"
     const val testRunner = "com.android.support.test:runner:${Versions.testRunner}"
     const val espressoLib = "com.android.support.test.espresso:espresso-core:${Versions.espresso}"
 }
