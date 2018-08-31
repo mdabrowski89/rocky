@@ -9,16 +9,18 @@ import pl.mobite.rocky.utils.SchedulerProvider
 
 class MapViewModel(
         placeRepository: PlaceRepository,
-        schedulerProvider: SchedulerProvider
+        schedulerProvider: SchedulerProvider,
+        initialState: MapViewState? = null
 ) : ViewModel() {
 
     private val mapIntentsSource = PublishRelay.create<MapIntent>()
 
-    private val mapViewStateSource = MapViewStateSourceFactory.instance.create(
+    private val mapViewStateSource: Observable<MapViewState> by lazy { MapViewStateSourceFactory.instance.create(
             mapIntentsSource,
             placeRepository,
-            schedulerProvider
-    )
+            schedulerProvider,
+            initialState
+    )}
 
     fun processIntents(intents: Observable<MapIntent>) {
         intents.subscribe(mapIntentsSource)

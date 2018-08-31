@@ -11,15 +11,16 @@ class MapViewStateSourceFactory private constructor(){
     fun create(
             intentsSource: PublishRelay<MapIntent>,
             placeRepository: PlaceRepository,
-            schedulerProvider: SchedulerProvider)
-            : Observable<MapViewState> {
+            schedulerProvider: SchedulerProvider,
+            initialState: MapViewState? = null
+    ): Observable<MapViewState> {
         val mapIntentInterpreter = MapIntentInterpreter()
         val mapActionProcessor = MapActionProcessor(placeRepository, schedulerProvider)
         val mapReducer = MapReducer()
         return intentsSource
                 .map(mapIntentInterpreter)
                 .compose(mapActionProcessor)
-                .scan(MapViewState.default(), mapReducer)
+                .scan(initialState ?: MapViewState.default(), mapReducer)
                 .distinctUntilChanged()
                 .replay(1)
                 .autoConnect(0)

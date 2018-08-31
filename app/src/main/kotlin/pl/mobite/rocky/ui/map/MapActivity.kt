@@ -36,10 +36,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val handler = Handler()
     private lateinit var disposable: CompositeDisposable
+    private var lastViewState: MapViewState? = null
 
-    private val viewModel: MapViewModel by lazy {
-        ViewModelProviders.of(this, RockyViewModelFactory.instance).get(MapViewModel::class.java)
-    }
+    private lateinit var viewModel: MapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +53,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 clearButton.setVisibleOrGone(queryInput.text.isNotEmpty())
             }
         })
+
+        viewModel = ViewModelProviders.of(this,
+                RockyViewModelFactory.getInstance(savedInstanceState?.getParcelable(MapViewState.PARCEL_KEY)))
+                .get(MapViewModel::class.java)
     }
 
     override fun onStart() {
@@ -69,6 +72,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         disposable.dispose()
         handler.removeCallbacksAndMessages(null)
         super.onStop()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        lastViewState?.takeIf { !it.isLoading }?.let {mapViewState ->
+            outState?.putParcelable(MapViewState.PARCEL_KEY, mapViewState)
+        }
     }
 
     private fun intents(): Observable<MapIntent> {
@@ -87,7 +97,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             true
         }
-        mapReadyRelay.accept(MapReadyIntent)
+
+        /*
+        If we send intent immediately and in view state we have a list of places to display on map than app will crash
+        with an exception:
+        "Map size can't be 0. Most likely, layout has not yet occured for the map view.  Either wait until layout has
+        occurred or use newLatLngBounds(LatLngBounds, int, int, int) which allows you to specify the map's dimensions."
+
+        Looks like when onMapReady callback is invoked map is still not yet ready for updating its camera with
+        LatLngBounds update
+         */
+        handler.post { mapReadyRelay.accept(MapReadyIntent) }
     }
 
     private fun searchIntent(): Observable<SearchPlacesIntent> {
@@ -97,6 +117,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun render(state: MapViewState) {
+        lastViewState = state
         with(state) {
 
             queryInput.isEnabled = googleMap != null && !isLoading
