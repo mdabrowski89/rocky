@@ -15,12 +15,15 @@ class MapViewModel(
 
     private val mapIntentsSource = PublishRelay.create<MapIntent>()
 
-    private val mapViewStateSource: Observable<MapViewState> by lazy { MapViewStateSourceFactory.instance.create(
-            mapIntentsSource,
-            placeRepository,
-            schedulerProvider,
-            initialState
-    )}
+    private val mapViewStateSource: Observable<MapViewState> by lazy {
+        mapIntentsSource
+            .map(MapIntentInterpreter())
+            .compose(MapActionProcessor(placeRepository, schedulerProvider))
+            .scan(initialState ?: MapViewState.default(), MapReducer())
+            .distinctUntilChanged()
+            .replay(1)
+            .autoConnect(0)
+    }
 
     fun processIntents(intents: Observable<MapIntent>) {
         intents.subscribe(mapIntentsSource)

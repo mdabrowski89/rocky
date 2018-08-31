@@ -28,12 +28,12 @@ class MapActionProcessorTest {
     }
 
     @Test
-    fun testMapReadyAction() {
-        mapActionProcessor.apply(Observable.just(MapReadyAction))
+    fun testMReRenderAction() {
+        mapActionProcessor.apply(Observable.just(ReRenderAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
-                MapReadyResult
+                ReRenderResult
         ))
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -41,68 +41,68 @@ class MapActionProcessorTest {
 
     @Test
     fun testLoadPlacesActionSuccess() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.just(places))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(testQuery)))
+        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
         assertEquals(2, testObserver.valueCount())
         assertEquals(LoadPlacesResult.InFlight, testObserver.values()[0])
         assertTrue(testObserver.values()[1] is LoadPlacesResult.Success)
-        assertEquals(places, (testObserver.values()[1] as LoadPlacesResult.Success).places)
+        assertEquals(dummyPlaces, (testObserver.values()[1] as LoadPlacesResult.Success).places)
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
 
     @Test
     fun testLoadPlacesActionSuccessButEmptyList() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.just(emptyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyEmptyPlaces))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(testQuery)))
+        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
         assertEquals(2, testObserver.valueCount())
         assertEquals(LoadPlacesResult.InFlight, testObserver.values()[0])
         assertTrue(testObserver.values()[1] is LoadPlacesResult.Success)
-        assertEquals(emptyPlaces, (testObserver.values()[1] as LoadPlacesResult.Success).places)
+        assertEquals(dummyEmptyPlaces, (testObserver.values()[1] as LoadPlacesResult.Success).places)
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
 
     @Test
     fun testLoadPlacesActionFailure() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.error(testError))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(testQuery)))
+        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
                 LoadPlacesResult.InFlight,
-                LoadPlacesResult.Failure(testError)
+                LoadPlacesResult.Failure(dummyException)
         ))
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
 
     @Test
-    fun testAllPlacesGoneAction() {
-        mapActionProcessor.apply(Observable.just(AllPlacesGoneAction))
+    fun testClearSearchResultsAction() {
+        mapActionProcessor.apply(Observable.just(ClearSearchResultsAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
-                AllPlacesGoneResult
+                ClearSearchResultsResult
         ))
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
 
     @Test
-    fun testErrorDisplayedAction() {
-        mapActionProcessor.apply(Observable.just(ErrorDisplayedAction))
+    fun testClearErrorAction() {
+        mapActionProcessor.apply(Observable.just(ClearErrorAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
-                ErrorDisplayedResult
+                ClearErrorResult
         ))
         testObserver.assertComplete()
         testObserver.assertNoErrors()

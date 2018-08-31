@@ -31,14 +31,14 @@ class PlaceApiServiceImplTest {
     @Test
     fun testOnePageQuery() {
         val count = 7
-        val placeApiResponseList = createPlaceApiResponseList(count, pageLimit)
+        val placeApiResponseList = createDummyPlaceApiResponseList(count, pageLimit)
         val placeApiListExpected = placeApiResponseList.getAllPlaceApiAsList()
         placeApiResponseList.forEachIndexed { i, list ->
-            `when`(musicBrainzServiceMock.getPlaces(testQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
+            `when`(musicBrainzServiceMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
                     .thenReturn(Single.just(list))
         }
 
-        placeApiServiceImpl.fetchAllPlacesFrom1990(testQuery)
+        placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertValueCount(1)
@@ -50,54 +50,54 @@ class PlaceApiServiceImplTest {
     @Test
     fun testMultiPageQuery() {
         val count = 65
-        val placeApiResponseList = createPlaceApiResponseList(count, pageLimit)
+        val placeApiResponseList = createDummyPlaceApiResponseList(count, pageLimit)
         val placeApiListExpected = placeApiResponseList.getAllPlaceApiAsList()
         placeApiResponseList.forEachIndexed { i, list ->
-            `when`(musicBrainzServiceMock.getPlaces(testQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
+            `when`(musicBrainzServiceMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
                     .thenReturn(Single.just(list))
         }
 
         /* I need to use blockingGet because testObserver wont work */
-        val placesApiListTested = placeApiServiceImpl.fetchAllPlacesFrom1990(testQuery).blockingGet()
+        val placesApiListTested = placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
 
         assertEquals(placeApiListExpected, placesApiListTested)
     }
 
     @Test
     fun testOnePageQueryError() {
-        `when`(musicBrainzServiceMock.getPlaces(testQuery.withYearFilter(), 0, pageLimit))
-                .thenReturn(Single.error(testException))
+        `when`(musicBrainzServiceMock.getPlaces(dummyQuery.withYearFilter(), 0, pageLimit))
+                .thenReturn(Single.error(dummyException))
 
-        placeApiServiceImpl.fetchAllPlacesFrom1990(testQuery)
+        placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertNotComplete()
-        testObserver.assertError(testException)
+        testObserver.assertError(dummyException)
     }
 
 
     @Test
     fun testMultiPageQueryError() {
         val count = 65
-        val placeApiResponseList = createPlaceApiResponseList(count, pageLimit)
+        val placeApiResponseList = createDummyPlaceApiResponseList(count, pageLimit)
         placeApiResponseList.forEachIndexed { i, list ->
             val single = if (i < placeApiResponseList.size - 1) {
                 Single.just(list)
             } else {
                 /* throw error in last request */
-                Single.error(testException)
+                Single.error(dummyException)
             }
-            `when`(musicBrainzServiceMock.getPlaces(testQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
+            `when`(musicBrainzServiceMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
                     .thenReturn(single)
         }
 
         /* I need to use blockingGet because testObserver wont work,
          * and it causes that the exception needs to be catch in this way */
         try {
-            placeApiServiceImpl.fetchAllPlacesFrom1990(testQuery).blockingGet()
+            placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
             assertTrue("TextException should be thrown", false)
         } catch (e: Throwable) {
-            assertTrue(e.cause is TestException)
+            assertTrue(e.cause is DummyException)
         }
     }
 

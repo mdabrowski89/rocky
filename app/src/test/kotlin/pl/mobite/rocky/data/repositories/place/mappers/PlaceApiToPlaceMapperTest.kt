@@ -17,21 +17,22 @@ class PlaceApiToPlaceMapperTest {
 
     @Test
     fun testValidObject() {
-        val placeTested = placeApiToPlaceMapper.apply(placeApi)
+        val placeTested = placeApiToPlaceMapper.apply(dummyPlaceApi)
 
         assertNotEquals(null, placeTested)
-        assertEquals(placeExpected.name, placeTested?.name)
-        assertEquals(placeExpected.openYear, placeTested?.openYear)
-        assertEquals(placeExpected.cords, placeTested?.cords)
+        assertEquals(dummyPlaceExpected.name, placeTested?.name)
+        assertEquals(dummyPlaceExpected.openYear, placeTested?.openYear)
+        assertEquals(dummyPlaceExpected.lat, placeTested?.lat)
+        assertEquals(dummyPlaceExpected.lng, placeTested?.lng)
     }
 
     @Test
     fun testInvalidObjects() {
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid1))
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid2))
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid3))
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid4))
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid5))
-        assertEquals(null, placeApiToPlaceMapper.apply(placeApiInvalid6))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid1))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid2))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid3))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid4))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid5))
+        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid6))
     }
 }

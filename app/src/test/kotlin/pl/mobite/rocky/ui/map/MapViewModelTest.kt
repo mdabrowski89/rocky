@@ -42,37 +42,37 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentSuccess() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.just(places))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
+        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
         testObserver.assertValueAt(2) { with(it) {
-            !isLoading && places == places && placesTimestamp != null && error == null
+            !isLoading && areMarkerDataListEquals(dummyMarkerDataList, markerDataList) && dataCreationTimestamp != null && error == null
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
     }
 
     @Test
-    fun testSearchPlacesIntentSuccessAndAllPlacesGone() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.just(places))
+    fun testSearchPlacesIntentSuccessAndAllMarkersGone() {
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
         mapViewModel.processIntents(Observable.fromArray(
-                MapIntent.SearchPlacesIntent(testQuery),
-                MapIntent.AllPlacesGoneIntent
+                MapIntent.SearchPlacesIntent(dummyQuery),
+                MapIntent.AllMarkersGoneIntent
         ))
 
         testObserver.assertValueCount(4)
         testObserver.assertValueAt(0) { it == initialState }
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
         testObserver.assertValueAt(2) { with(it) {
-            !isLoading && places == places && placesTimestamp != null && error == null
+            !isLoading && markerDataList == markerDataList && dataCreationTimestamp != null && error == null
         }}
         testObserver.assertValueAt(3) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == null
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
@@ -80,15 +80,15 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentSuccessButEmptyList() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.just(emptyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyEmptyPlaces))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
+        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
         testObserver.assertValueAt(2) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp != null && error == null
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp != null && error == null
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
@@ -96,15 +96,15 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentFailure() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.error(testError))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(testQuery)))
+        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
         testObserver.assertValueAt(2) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == dummyException
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
@@ -112,10 +112,10 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentFailureAndErrorDisplayed() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(testQuery)).thenReturn(Single.error(testError))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
         mapViewModel.processIntents(Observable.fromArray(
-                MapIntent.SearchPlacesIntent(testQuery),
+                MapIntent.SearchPlacesIntent(dummyQuery),
                 MapIntent.ErrorDisplayedIntent
         ))
 
@@ -123,10 +123,10 @@ class MapViewModelTest {
         testObserver.assertValueAt(0) { it == initialState }
         testObserver.assertValueAt(1) { with(it) { isLoading && error == null } }
         testObserver.assertValueAt(2) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == dummyException
         }}
         testObserver.assertValueAt(3) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == null
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
@@ -141,16 +141,16 @@ class MapViewModelTest {
     * 6. error message disappear*/
     @Test
     fun testUsageScenario1() {
-        val validQuery = testQuery
-        val errorQuery = "error query"
-        `when`(placeRepositoryMock.getPlacesFrom1990(validQuery)).thenReturn(Single.just(places))
-        `when`(placeRepositoryMock.getPlacesFrom1990(errorQuery)).thenReturn(Single.error(testError))
+        val dummyQueryValid = dummyQuery
+        val dummyQueryError = "error query"
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQueryValid)).thenReturn(Single.just(dummyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQueryError)).thenReturn(Single.error(dummyException))
 
         mapViewModel.processIntents(Observable.fromArray(
                 MapIntent.MapReadyIntent,
-                MapIntent.SearchPlacesIntent(validQuery),
-                MapIntent.SearchPlacesIntent(errorQuery),
-                MapIntent.AllPlacesGoneIntent,
+                MapIntent.SearchPlacesIntent(dummyQueryValid),
+                MapIntent.SearchPlacesIntent(dummyQueryError),
+                MapIntent.AllMarkersGoneIntent,
                 MapIntent.ErrorDisplayedIntent
         ))
 
@@ -165,23 +165,23 @@ class MapViewModelTest {
 
         /* First query results */
         testObserver.assertValueAt(3) { with(it) {
-            !isLoading && places == places && placesTimestamp != null && error == null
+            !isLoading && areMarkerDataListEquals(dummyMarkerDataList, markerDataList) && dataCreationTimestamp != null && error == null
         }}
         /* Second query loading */
         testObserver.assertValueAt(4) { with(it) {
-            isLoading && places == places && placesTimestamp != null && error == null
+            isLoading && areMarkerDataListEquals(dummyMarkerDataList, markerDataList) && dataCreationTimestamp != null && error == null
         }}
         /* Second query error */
         testObserver.assertValueAt(5) { with(it) {
-            !isLoading && places == places && placesTimestamp != null && error == testError
+            !isLoading && areMarkerDataListEquals(dummyMarkerDataList, markerDataList) && dataCreationTimestamp != null && error == dummyException
         }}
         /* All makers disappear */
         testObserver.assertValueAt(6) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == testError
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == dummyException
         }}
         /* Error message disappear */
         testObserver.assertValueAt(7) { with(it) {
-            !isLoading && places == emptyPlaces && placesTimestamp == null && error == null
+            !isLoading && markerDataList == dummyEmptyMarkerDataList && dataCreationTimestamp == null && error == null
         }}
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()

@@ -3,11 +3,11 @@ package pl.mobite.rocky.ui.map
 
 sealed class MapAction {
 
-    object MapReadyAction: MapAction()
+    object ReRenderAction: MapAction()
 
     data class LoadPlacesAction(val query: String): MapAction()
 
-    object AllPlacesGoneAction: MapAction()
+    object ClearSearchResultsAction: MapAction()
 
-    object ErrorDisplayedAction: MapAction()
+    object ClearErrorAction: MapAction()
 }

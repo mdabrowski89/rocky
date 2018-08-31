@@ -3,8 +3,8 @@ package pl.mobite.rocky.data.repositories.place.mappers
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import pl.mobite.rocky.data.repositories.place.placeApiList
-import pl.mobite.rocky.data.repositories.place.placeListExpected
+import pl.mobite.rocky.data.repositories.place.dummyPlaceApiList
+import pl.mobite.rocky.data.repositories.place.dummyPlaceListExpected
 
 class PlaceApiListToPlaceListMapperTest {
 
@@ -17,11 +17,11 @@ class PlaceApiListToPlaceListMapperTest {
 
     @Test
     fun testMapper() {
-        val placeListTested = placeApiListToPlaceListMapper.apply(placeApiList)
+        val placeListTested = placeApiListToPlaceListMapper.apply(dummyPlaceApiList)
 
-        assertEquals(placeListExpected.size, placeListTested.size)
+        assertEquals(dummyPlaceListExpected.size, placeListTested.size)
         placeListTested.forEachIndexed { index, place ->
-            assertEquals(place, placeListExpected[index])
+            assertEquals(place, dummyPlaceListExpected[index])
         }
     }
 }

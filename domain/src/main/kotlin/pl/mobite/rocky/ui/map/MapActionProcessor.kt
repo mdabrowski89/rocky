@@ -7,27 +7,25 @@ import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.utils.OneToOneObservableTransformer
 import pl.mobite.rocky.utils.SchedulerProvider
 
-
-
 class MapActionProcessor(
-        private val placesRepository: PlaceRepository,
+        private val placeRepository: PlaceRepository,
         private val schedulerProvider: SchedulerProvider)
     : ObservableTransformer<MapAction, MapResult> {
 
     override fun apply(actions: Observable<MapAction>): ObservableSource<MapResult> {
         return actions.publish { shared ->
             Observable.merge(listOf(
-                    shared.ofType(MapAction.MapReadyAction::class.java).compose(mapReadyProcessor),
+                    shared.ofType(MapAction.ReRenderAction::class.java).compose(reRenderProcessor),
                     shared.ofType(MapAction.LoadPlacesAction::class.java).compose(loadPlacesProcessor),
-                    shared.ofType(MapAction.AllPlacesGoneAction::class.java).compose(allPlacesGoneProcessor),
-                    shared.ofType(MapAction.ErrorDisplayedAction::class.java).compose(errorDisplayedProcessor)
+                    shared.ofType(MapAction.ClearSearchResultsAction::class.java).compose(clearSearchResultsProcessor),
+                    shared.ofType(MapAction.ClearErrorAction::class.java).compose(clearErrorProcessor)
             ))
         }
     }
 
     private val loadPlacesProcessor = ObservableTransformer { actions: Observable<MapAction.LoadPlacesAction> ->
         actions.switchMap { action ->
-            placesRepository.getPlacesFrom1990(action.query)
+            placeRepository.getPlacesFrom1990(action.query)
                     .toObservable()
                     .map { places -> MapResult.LoadPlacesResult.Success(places, System.currentTimeMillis()) }
                     .cast(MapResult.LoadPlacesResult::class.java)
@@ -38,10 +36,10 @@ class MapActionProcessor(
         }
     }
 
-    private val mapReadyProcessor = OneToOneObservableTransformer<MapAction.MapReadyAction, MapResult.MapReadyResult>(MapResult.MapReadyResult)
+    private val reRenderProcessor = OneToOneObservableTransformer<MapAction.ReRenderAction, MapResult.ReRenderResult>(MapResult.ReRenderResult)
 
-    private val errorDisplayedProcessor = OneToOneObservableTransformer<MapAction.ErrorDisplayedAction, MapResult.ErrorDisplayedResult>(MapResult.ErrorDisplayedResult)
+    private val clearErrorProcessor = OneToOneObservableTransformer<MapAction.ClearErrorAction, MapResult.ClearErrorResult>(MapResult.ClearErrorResult)
 
-    private val allPlacesGoneProcessor = OneToOneObservableTransformer<MapAction.AllPlacesGoneAction, MapResult.AllPlacesGoneResult>(MapResult.AllPlacesGoneResult)
+    private val clearSearchResultsProcessor = OneToOneObservableTransformer<MapAction.ClearSearchResultsAction, MapResult.ClearSearchResultsResult>(MapResult.ClearSearchResultsResult)
 
 }

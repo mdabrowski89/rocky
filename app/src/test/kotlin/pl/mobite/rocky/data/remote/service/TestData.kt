@@ -4,36 +4,26 @@ import pl.mobite.rocky.data.remote.models.PlaceApi
 import pl.mobite.rocky.data.remote.models.PlaceApiResponse
 
 
-const val testQuery = "test query"
+const val dummyQuery = "query"
 
-val testException = TestException()
+val dummyException = DummyException()
 
-class TestException: Throwable("test exception")
+class DummyException: Throwable("dummy exception")
 
-fun getPageOffset(pageNumber: Int, queryLimit: Int) = pageNumber * queryLimit
-
-fun createPlaceApiResponseList(count: Int, queryLimit: Int): List<PlaceApiResponse> {
+fun createDummyPlaceApiResponseList(count: Int, queryLimit: Int): List<PlaceApiResponse> {
     val pageNumbers = Math.ceil(count / queryLimit.toDouble()).toInt()
     return (0 until pageNumbers).map { pageNumber ->
         val firstId = pageNumber * queryLimit
         val placeApiCount = if (pageNumber < pageNumbers - 1) queryLimit else count - (pageNumber * queryLimit)
-        PlaceApiResponse(null, count, getPageOffset(pageNumber, queryLimit), createPlaceApiList(firstId, placeApiCount))
+        PlaceApiResponse(null, count, getPageOffset(pageNumber, queryLimit), createDummyPlaceApiList(firstId, placeApiCount))
     }
 }
 
-fun createPlaceApiList(firstId: Int, count: Int): List<PlaceApi> {
-    return (0 until count).map { i -> createPlaceAPI(firstId + i) }
+fun createDummyPlaceApiList(firstId: Int, count: Int): List<PlaceApi> {
+    return (0 until count).map { i -> createDummyPlaceAPI(firstId + i) }
 }
 
-fun List<PlaceApiResponse>.getAllPlaceApiAsList(): List<PlaceApi> {
-    val list = mutableListOf<PlaceApi>()
-    forEach { placeAPiResponse ->
-        placeAPiResponse.places?.let { list.addAll(it.filterNotNull()) }
-    }
-    return list
-}
-
-fun createPlaceAPI(id: Int) = PlaceApi(
+fun createDummyPlaceAPI(id: Int) = PlaceApi(
         id.toString(),
         "Studio",
         "23",
@@ -43,3 +33,13 @@ fun createPlaceAPI(id: Int) = PlaceApi(
         null,
         null,
         null)
+
+fun getPageOffset(pageNumber: Int, queryLimit: Int) = pageNumber * queryLimit
+
+fun List<PlaceApiResponse>.getAllPlaceApiAsList(): List<PlaceApi> {
+    val list = mutableListOf<PlaceApi>()
+    forEach { placeAPiResponse ->
+        placeAPiResponse.places?.let { list.addAll(it.filterNotNull()) }
+    }
+    return list
+}

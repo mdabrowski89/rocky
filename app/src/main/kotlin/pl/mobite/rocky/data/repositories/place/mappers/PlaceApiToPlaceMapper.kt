@@ -2,7 +2,6 @@ package pl.mobite.rocky.data.repositories.place.mappers
 
 import io.reactivex.functions.Function
 import pl.mobite.rocky.data.models.Place
-import pl.mobite.rocky.data.models.PlaceCords
 import pl.mobite.rocky.data.remote.models.PlaceApi
 
 
@@ -15,7 +14,7 @@ class PlaceApiToPlaceMapper: Function<PlaceApi, Place> {
         val lng = placeApi.coordinates?.longitude?.toDoubleOrNull()
 
         return if (name != null && openYear != null && lat != null && lng != null) {
-            Place(name, openYear, PlaceCords(lat, lng))
+            Place(name, openYear, lat, lng)
         } else {
             null
         }

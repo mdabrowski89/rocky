@@ -18,12 +18,12 @@ class MapIntentInterpreterTest {
 
     @Test
     fun testMapIntentInterpreter() {
-        assertEquals(MapReadyAction, mapIntentInterpreter.apply(MapReadyIntent))
+        assertEquals(ReRenderAction, mapIntentInterpreter.apply(MapReadyIntent))
 
-        assertEquals(LoadPlacesAction(testQuery), mapIntentInterpreter.apply(SearchPlacesIntent(testQuery)))
+        assertEquals(LoadPlacesAction(dummyQuery), mapIntentInterpreter.apply(SearchPlacesIntent(dummyQuery)))
 
-        assertEquals(AllPlacesGoneAction, mapIntentInterpreter.apply(AllPlacesGoneIntent))
+        assertEquals(ClearSearchResultsAction, mapIntentInterpreter.apply(AllMarkersGoneIntent))
 
-        assertEquals(ErrorDisplayedAction, mapIntentInterpreter.apply(ErrorDisplayedIntent))
+        assertEquals(ClearErrorAction, mapIntentInterpreter.apply(ErrorDisplayedIntent))
     }
 }

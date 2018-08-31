@@ -7,10 +7,10 @@ class MapIntentInterpreter: Function<MapIntent, MapAction> {
 
     override fun apply(intent: MapIntent): MapAction {
         return when(intent) {
-            is MapIntent.MapReadyIntent -> MapAction.MapReadyAction
+            is MapIntent.MapReadyIntent -> MapAction.ReRenderAction
             is MapIntent.SearchPlacesIntent -> MapAction.LoadPlacesAction(intent.query)
-            is MapIntent.AllPlacesGoneIntent -> MapAction.AllPlacesGoneAction
-            is MapIntent.ErrorDisplayedIntent -> MapAction.ErrorDisplayedAction
+            is MapIntent.AllMarkersGoneIntent -> MapAction.ClearSearchResultsAction
+            is MapIntent.ErrorDisplayedIntent -> MapAction.ClearErrorAction
         }
     }
 }

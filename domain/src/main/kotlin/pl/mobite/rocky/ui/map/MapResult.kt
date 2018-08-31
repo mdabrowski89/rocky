@@ -5,7 +5,7 @@ import pl.mobite.rocky.data.models.Place
 
 sealed class MapResult {
 
-    object MapReadyResult: MapResult()
+    object ReRenderResult: MapResult()
 
     sealed class LoadPlacesResult: MapResult() {
 
@@ -16,7 +16,7 @@ sealed class MapResult {
         data class Success(val places: List<Place>, val timestamp: Long): LoadPlacesResult()
     }
 
-    object AllPlacesGoneResult: MapResult()
+    object ClearSearchResultsResult: MapResult()
 
-    object ErrorDisplayedResult: MapResult()
+    object ClearErrorResult: MapResult()
 }

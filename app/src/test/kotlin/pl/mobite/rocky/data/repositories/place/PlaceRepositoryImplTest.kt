@@ -25,21 +25,21 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Success() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(testQuery)).thenReturn(Single.just(placeApiList))
+        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaceApiList))
 
-        placeRepositoryImpl.getPlacesFrom1990(testQuery)
+        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
-        testObserver.assertValue(placeListExpected)
+        testObserver.assertValue(dummyPlaceListExpected)
         testObserver.assertNoErrors()
         testObserver.assertComplete()
     }
 
     @Test
     fun testGetPlacesFrom1990SuccessButEmptyList() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(testQuery)).thenReturn(Single.just(emptyList()))
+        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
-        placeRepositoryImpl.getPlacesFrom1990(testQuery)
+        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertValue(emptyList())
@@ -49,12 +49,12 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Failure() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(testQuery)).thenReturn(Single.error(testException))
+        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        placeRepositoryImpl.getPlacesFrom1990(testQuery)
+        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
-        testObserver.assertError(testException)
+        testObserver.assertError(dummyException)
         testObserver.assertNotComplete()
     }
 }
