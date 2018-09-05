@@ -4,26 +4,28 @@ import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import pl.mobite.rocky.data.repositories.PlaceRepository
-import pl.mobite.rocky.utils.OneToOneObservableTransformer
+import pl.mobite.rocky.ui.map.MapAction.*
+import pl.mobite.rocky.ui.map.MapResult.*
 import pl.mobite.rocky.utils.SchedulerProvider
+import pl.mobite.rocky.utils.SimpleActionProcessor
 
 class MapActionProcessor(
         private val placeRepository: PlaceRepository,
-        private val schedulerProvider: SchedulerProvider)
-    : ObservableTransformer<MapAction, MapResult> {
+        private val schedulerProvider: SchedulerProvider
+) : ObservableTransformer<MapAction, MapResult> {
 
     override fun apply(actions: Observable<MapAction>): ObservableSource<MapResult> {
         return actions.publish { shared ->
             Observable.merge(listOf(
-                    shared.ofType(MapAction.ReRenderAction::class.java).compose(reRenderProcessor),
-                    shared.ofType(MapAction.LoadPlacesAction::class.java).compose(loadPlacesProcessor),
-                    shared.ofType(MapAction.ClearSearchResultsAction::class.java).compose(clearSearchResultsProcessor),
-                    shared.ofType(MapAction.ClearErrorAction::class.java).compose(clearErrorProcessor)
+                    shared.ofType(ReRenderAction::class.java).compose(reRenderProcessor),
+                    shared.ofType(LoadPlacesAction::class.java).compose(loadPlacesProcessor),
+                    shared.ofType(ClearSearchResultsAction::class.java).compose(clearSearchResultsProcessor),
+                    shared.ofType(ClearErrorAction::class.java).compose(clearErrorProcessor)
             ))
         }
     }
 
-    private val loadPlacesProcessor = ObservableTransformer { actions: Observable<MapAction.LoadPlacesAction> ->
+    private val loadPlacesProcessor = ObservableTransformer { actions: Observable<LoadPlacesAction> ->
         actions.switchMap { action ->
             placeRepository.getPlacesFrom1990(action.query)
                     .toObservable()
@@ -36,10 +38,10 @@ class MapActionProcessor(
         }
     }
 
-    private val reRenderProcessor = OneToOneObservableTransformer<MapAction.ReRenderAction, MapResult.ReRenderResult>(MapResult.ReRenderResult)
+    private val reRenderProcessor = SimpleActionProcessor<ReRenderAction, ReRenderResult>(ReRenderResult)
 
-    private val clearErrorProcessor = OneToOneObservableTransformer<MapAction.ClearErrorAction, MapResult.ClearErrorResult>(MapResult.ClearErrorResult)
+    private val clearErrorProcessor = SimpleActionProcessor<ClearErrorAction, ClearErrorResult>(ClearErrorResult)
 
-    private val clearSearchResultsProcessor = OneToOneObservableTransformer<MapAction.ClearSearchResultsAction, MapResult.ClearSearchResultsResult>(MapResult.ClearSearchResultsResult)
+    private val clearSearchResultsProcessor = SimpleActionProcessor<ClearSearchResultsAction, ClearSearchResultsResult>(ClearSearchResultsResult)
 
 }

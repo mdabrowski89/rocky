@@ -69,9 +69,9 @@ dependencies {
     androidTestImplementation Dependencies.testRunner
     androidTestImplementation Dependencies.testRules
     androidTestImplementation Dependencies.espressoLib
-    androidTestImplementation('com.squareup.rx.idler:rx2-idler:0.9.0') {
-        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
-        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+    androidTestImplementation(Dependencies.rxIdlerLib) {
+        exclude group: Group.rxJava2, module: Module.rxAndroid
+        exclude group: Group.rxJava2, module: Module.rxJava
     }
 }
 

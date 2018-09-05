@@ -14,6 +14,7 @@ object Versions {
     const val rxKotlin = "2.2.0"
     const val rxBinding = "2.1.1"
     const val rxRelay = "2.0.0"
+    const val rxIdler = "0.9.0"
 
     const val retrofit = "2.4.0"
 
@@ -38,6 +39,7 @@ object Dependencies {
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"
     const val rxBindingLib = "com.jakewharton.rxbinding2:rxbinding:${Versions.rxBinding}"
     const val rxRelayLib = "com.jakewharton.rxrelay2:rxrelay:${Versions.rxRelay}"
+    const val rxIdlerLib = "com.squareup.rx.idler:rx2-idler:${Versions.rxIdler}"
 
     const val retrofitLib = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitGsonConverterLib = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
@@ -49,4 +51,13 @@ object Dependencies {
     const val testRunner = "com.android.support.test:runner:${Versions.supportTest}"
     const val testRules = "com.android.support.test:rules:${Versions.supportTest}"
     const val espressoLib = "com.android.support.test.espresso:espresso-core:${Versions.espresso}"
+}
+
+object Group {
+    const val rxJava2 = "io.reactivex.rxjava2"
+}
+
+object Module {
+    const val rxAndroid = "rxandroid"
+    const val rxJava = "rxjava"
 }
