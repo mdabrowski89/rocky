@@ -9,20 +9,20 @@ import pl.mobite.rocky.ui.components.map.MapIntent.*
 
 class MapIntentInterpreterTest {
 
-    private lateinit var mapIntentInterpreter: MapIntentInterpreter
+    private lateinit var interpreter: MapIntentInterpreter
 
     @Before
     fun setUp() {
-        mapIntentInterpreter = MapIntentInterpreter()
+        interpreter = MapIntentInterpreter()
     }
 
     @Test
     fun testMapIntentInterpreter() {
-        assertEquals(ReRenderAction, mapIntentInterpreter.apply(MapReadyIntent))
+        assertEquals(ReRenderAction, interpreter.apply(MapReadyIntent))
 
-        assertEquals(LoadPlacesAction(dummyQuery), mapIntentInterpreter.apply(SearchPlacesIntent(dummyQuery)))
+        assertEquals(LoadPlacesAction(dummyQuery), interpreter.apply(SearchPlacesIntent(dummyQuery)))
 
-        assertEquals(ClearSearchResultsAction, mapIntentInterpreter.apply(AllMarkersGoneIntent))
+        assertEquals(ClearSearchResultsAction, interpreter.apply(AllMarkersGoneIntent))
     }
 
     companion object {

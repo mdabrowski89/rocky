@@ -17,6 +17,7 @@ class MapViewModel(
 
     private val mapViewStateSource: Observable<MapViewState> by lazy {
         mapIntentsSource
+                // TODO: pass this objects via constructor + DI
             .map(MapIntentInterpreter())
             .compose(MapActionProcessor(placeRepository, schedulerProvider))
             .scan(initialState ?: MapViewState.default(), MapReducer())

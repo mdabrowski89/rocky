@@ -17,12 +17,12 @@ class PlaceRepositoryImplTest {
 
     private val placeApiServiceMock: PlaceApiService by lazyMock()
 
-    private lateinit var placeRepositoryImpl: PlaceRepositoryImpl
+    private lateinit var repository: PlaceRepositoryImpl
     private lateinit var testObserver: TestObserver<List<Place>>
 
     @Before
     fun setUp() {
-        placeRepositoryImpl = PlaceRepositoryImpl(placeApiServiceMock)
+        repository = PlaceRepositoryImpl(placeApiServiceMock)
         testObserver = TestObserver()
     }
 
@@ -30,7 +30,7 @@ class PlaceRepositoryImplTest {
     fun testGetPlacesFrom1990Success() {
         `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaceApiList))
 
-        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
+        repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertValue(dummyPlaceListExpected)
@@ -42,7 +42,7 @@ class PlaceRepositoryImplTest {
     fun testGetPlacesFrom1990SuccessButEmptyList() {
         `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
-        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
+        repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertValue(emptyList())
@@ -54,7 +54,7 @@ class PlaceRepositoryImplTest {
     fun testGetPlacesFrom1990Failure() {
         `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        placeRepositoryImpl.getPlacesFrom1990(dummyQuery)
+        repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertError(dummyException)

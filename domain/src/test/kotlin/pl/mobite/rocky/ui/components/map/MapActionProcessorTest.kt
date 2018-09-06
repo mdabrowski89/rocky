@@ -19,18 +19,18 @@ class MapActionProcessorTest {
 
     private val placeRepositoryMock: PlaceRepository by lazyMock()
 
-    private lateinit var mapActionProcessor: MapActionProcessor
+    private lateinit var processor: MapActionProcessor
     private lateinit var testObserver: TestObserver<MapResult>
 
     @Before
     fun setUp() {
-        mapActionProcessor = MapActionProcessor(placeRepositoryMock, ImmediateSchedulerProvider.instance)
+        processor = MapActionProcessor(placeRepositoryMock, ImmediateSchedulerProvider.instance)
         testObserver = TestObserver()
     }
 
     @Test
     fun testReRenderAction() {
-        mapActionProcessor.apply(Observable.just(ReRenderAction))
+        processor.apply(Observable.just(ReRenderAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -44,10 +44,10 @@ class MapActionProcessorTest {
     fun testLoadPlacesActionSuccess() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
+        processor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
-        assertEquals(2, testObserver.valueCount())
+        testObserver.assertValueCount(2)
         assertEquals(LoadPlacesResult.InFlight, testObserver.values()[0])
         assertTrue(testObserver.values()[1] is LoadPlacesResult.Success)
         assertEquals(dummyPlaces, (testObserver.values()[1] as LoadPlacesResult.Success).places)
@@ -59,10 +59,10 @@ class MapActionProcessorTest {
     fun testLoadPlacesActionSuccessButEmptyList() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyEmptyPlaces))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
+        processor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
-        assertEquals(2, testObserver.valueCount())
+        testObserver.assertValueCount(2)
         assertEquals(LoadPlacesResult.InFlight, testObserver.values()[0])
         assertTrue(testObserver.values()[1] is LoadPlacesResult.Success)
         assertEquals(dummyEmptyPlaces, (testObserver.values()[1] as LoadPlacesResult.Success).places)
@@ -74,7 +74,7 @@ class MapActionProcessorTest {
     fun testLoadPlacesActionFailure() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        mapActionProcessor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
+        processor.apply(Observable.just(LoadPlacesAction(dummyQuery)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -87,7 +87,7 @@ class MapActionProcessorTest {
 
     @Test
     fun testClearSearchResultsAction() {
-        mapActionProcessor.apply(Observable.just(ClearSearchResultsAction))
+        processor.apply(Observable.just(ClearSearchResultsAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(

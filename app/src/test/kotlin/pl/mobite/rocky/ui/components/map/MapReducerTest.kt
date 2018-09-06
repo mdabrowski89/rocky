@@ -10,18 +10,18 @@ import pl.mobite.rocky.utils.assertMarkerDataListEquals
 
 class MapReducerTest {
 
-    private lateinit var mapReducer: MapReducer
+    private lateinit var reducer: MapReducer
     private lateinit var initialState: MapViewState
 
     @Before
     fun setUp() {
-        mapReducer = MapReducer()
+        reducer = MapReducer()
         initialState = MapViewState.default()
     }
 
     @Test
     fun testReRenderResult() {
-        val newState = mapReducer.apply(initialState, MapResult.ReRenderResult)
+        val newState = reducer.apply(initialState, MapResult.ReRenderResult)
 
         assertEquals(initialState.markerDataList, newState.markerDataList)
         assertEquals(initialState.error, newState.error)
@@ -32,7 +32,7 @@ class MapReducerTest {
 
     @Test
     fun testLoadPlacesResultInFlight() {
-        val newState = mapReducer.apply(initialState, MapResult.LoadPlacesResult.InFlight)
+        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.InFlight)
 
         assertEquals(initialState.markerDataList, newState.markerDataList)
         assertEquals(null, newState.error)
@@ -43,7 +43,7 @@ class MapReducerTest {
 
     @Test
     fun testLoadPlacesResultSuccess() {
-        val newState = mapReducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyPlaces, dummyDataCreationTimestamp))
+        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyPlaces, dummyDataCreationTimestamp))
 
         assertMarkerDataListEquals(dummyMarkerDataList, newState.markerDataList)
         assertEquals(null, newState.error)
@@ -54,7 +54,7 @@ class MapReducerTest {
 
     @Test
     fun testLoadPlacesResultSuccessButEmptyList() {
-        val newState = mapReducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyEmptyPlaces, dummyDataCreationTimestamp))
+        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyEmptyPlaces, dummyDataCreationTimestamp))
 
         assertEquals(dummyEmptyMarkerDataList, newState.markerDataList)
         assertEquals(null, newState.error)
@@ -65,7 +65,7 @@ class MapReducerTest {
 
     @Test
     fun testLoadPlacesResultFailure() {
-        val newState = mapReducer.apply(initialState, MapResult.LoadPlacesResult.Failure(dummyException))
+        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Failure(dummyException))
 
         assertEquals(initialState.markerDataList, newState.markerDataList)
         assertEquals(dummyException, newState.error?.throwable)
@@ -76,7 +76,7 @@ class MapReducerTest {
 
     @Test
     fun testClearSearchResultsResult() {
-        val newState = mapReducer.apply(initialState, MapResult.ClearSearchResultsResult)
+        val newState = reducer.apply(initialState, MapResult.ClearSearchResultsResult)
 
         assertEquals(dummyEmptyMarkerDataList, newState.markerDataList)
         assertEquals(initialState.error, newState.error)

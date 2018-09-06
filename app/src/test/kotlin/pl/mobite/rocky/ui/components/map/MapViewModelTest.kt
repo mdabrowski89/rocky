@@ -18,21 +18,21 @@ class MapViewModelTest {
 
     private val placeRepositoryMock: PlaceRepository by lazyMock()
 
-    private lateinit var mapViewModel: MapViewModel
+    private lateinit var viewModel: MapViewModel
     private lateinit var testObserver: TestObserver<MapViewState>
 
     private lateinit var initialState: MapViewState
 
     @Before
     fun setUp() {
-        mapViewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance)
-        testObserver = mapViewModel.states().test()
+        viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance)
+        testObserver = viewModel.states().test()
         initialState = MapViewState.default()
     }
 
     @Test
     fun testMapReadyIntent() {
-        mapViewModel.processIntents(Observable.just(MapIntent.MapReadyIntent))
+        viewModel.processIntents(Observable.just(MapIntent.MapReadyIntent))
 
         testObserver.assertValueCount(2)
         testObserver.assertValueAt(0) { it == initialState }
@@ -47,7 +47,7 @@ class MapViewModelTest {
     fun testSearchPlacesIntentSuccess() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
+        viewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
@@ -63,7 +63,7 @@ class MapViewModelTest {
     fun testSearchPlacesIntentSuccessAndAllMarkersGone() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        mapViewModel.processIntents(Observable.fromArray(
+        viewModel.processIntents(Observable.fromArray(
                 MapIntent.SearchPlacesIntent(dummyQuery),
                 MapIntent.AllMarkersGoneIntent
         ))
@@ -85,7 +85,7 @@ class MapViewModelTest {
     fun testSearchPlacesIntentSuccessButEmptyList() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyEmptyPlaces))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
+        viewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
@@ -101,7 +101,7 @@ class MapViewModelTest {
     fun testSearchPlacesIntentFailure() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        mapViewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
+        viewModel.processIntents(Observable.just(MapIntent.SearchPlacesIntent(dummyQuery)))
 
         testObserver.assertValueCount(3)
         testObserver.assertValueAt(0) { it == initialState }
@@ -117,7 +117,7 @@ class MapViewModelTest {
     fun testSearchPlacesIntentFailureAndErrorDisplayed() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        mapViewModel.processIntents(Observable.fromArray(
+        viewModel.processIntents(Observable.fromArray(
                 MapIntent.SearchPlacesIntent(dummyQuery)
         ))
 
@@ -145,7 +145,7 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQueryValid)).thenReturn(Single.just(dummyPlaces))
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQueryError)).thenReturn(Single.error(dummyException))
 
-        mapViewModel.processIntents(Observable.fromArray(
+        viewModel.processIntents(Observable.fromArray(
                 MapIntent.MapReadyIntent,
                 MapIntent.SearchPlacesIntent(dummyQueryValid),
                 MapIntent.SearchPlacesIntent(dummyQueryError),
@@ -180,6 +180,8 @@ class MapViewModelTest {
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
     }
+
+    // TODO: test viewModel with initial state
 
     companion object {
 

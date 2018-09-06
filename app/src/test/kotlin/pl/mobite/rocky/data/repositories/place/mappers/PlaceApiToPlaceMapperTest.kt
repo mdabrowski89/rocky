@@ -11,16 +11,16 @@ import pl.mobite.rocky.utils.createSamplePlaceAPI
 
 class PlaceApiToPlaceMapperTest {
 
-    private lateinit var placeApiToPlaceMapper: PlaceApiToPlaceMapper
+    private lateinit var mapper: PlaceApiToPlaceMapper
 
     @Before
     fun setUp() {
-        placeApiToPlaceMapper = PlaceApiToPlaceMapper()
+        mapper = PlaceApiToPlaceMapper()
     }
 
     @Test
     fun testValidObject() {
-        val placeTested = placeApiToPlaceMapper.apply(dummyPlaceApi)
+        val placeTested = mapper.apply(dummyPlaceApi)
 
         assertNotEquals(null, placeTested)
         assertEquals(dummyPlaceExpected.name, placeTested?.name)
@@ -31,12 +31,12 @@ class PlaceApiToPlaceMapperTest {
 
     @Test
     fun testInvalidObjects() {
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid1))
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid2))
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid3))
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid4))
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid5))
-        assertEquals(null, placeApiToPlaceMapper.apply(dummyPlaceApiInvalid6))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid1))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid2))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid3))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid4))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid5))
+        assertEquals(null, mapper.apply(dummyPlaceApiInvalid6))
     }
 
     companion object {

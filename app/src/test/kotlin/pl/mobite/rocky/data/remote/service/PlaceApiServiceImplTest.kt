@@ -18,14 +18,14 @@ class PlaceApiServiceImplTest {
 
     private val musicBrainzServiceMock: MusicBrainzService by lazyMock()
 
-    private lateinit var placeApiServiceImpl: PlaceApiServiceImpl
+    private lateinit var service: PlaceApiServiceImpl
     private lateinit var testObserver: TestObserver<List<PlaceApi>>
 
     private val pageLimit = 10
 
     @Before
     fun setUp() {
-        placeApiServiceImpl = PlaceApiServiceImpl({ musicBrainzServiceMock }, pageLimit, 0)
+        service = PlaceApiServiceImpl({ musicBrainzServiceMock }, pageLimit, 0)
         testObserver = TestObserver()
     }
 
@@ -39,7 +39,7 @@ class PlaceApiServiceImplTest {
                     .thenReturn(Single.just(list))
         }
 
-        placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery)
+        service.fetchAllPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertValueCount(1)
@@ -59,7 +59,7 @@ class PlaceApiServiceImplTest {
         }
 
         /* I need to use blockingGet because testObserver wont work */
-        val placesApiListTested = placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
+        val placesApiListTested = service.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
 
         assertEquals(placeApiListExpected, placesApiListTested)
     }
@@ -69,7 +69,7 @@ class PlaceApiServiceImplTest {
         `when`(musicBrainzServiceMock.getPlaces(dummyQuery.withYearFilter(), 0, pageLimit))
                 .thenReturn(Single.error(dummyException))
 
-        placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery)
+        service.fetchAllPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
 
         testObserver.assertNotComplete()
@@ -95,7 +95,7 @@ class PlaceApiServiceImplTest {
         /* I need to use blockingGet because testObserver wont work,
          * and it causes that the exception needs to be catch in this way */
         try {
-            placeApiServiceImpl.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
+            service.fetchAllPlacesFrom1990(dummyQuery).blockingGet()
             assertTrue("TextException should be thrown", false)
         } catch (e: Throwable) {
             assertTrue(e.cause is DummyException)

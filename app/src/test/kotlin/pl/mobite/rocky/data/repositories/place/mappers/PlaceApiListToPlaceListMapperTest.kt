@@ -10,16 +10,16 @@ import pl.mobite.rocky.utils.createSamplePlaceAPI
 
 class PlaceApiListToPlaceListMapperTest {
 
-    private lateinit var placeApiListToPlaceListMapper: PlaceApiListToPlaceListMapper
+    private lateinit var mapper: PlaceApiListToPlaceListMapper
 
     @Before
     fun setUp() {
-        placeApiListToPlaceListMapper = PlaceApiListToPlaceListMapper()
+        mapper = PlaceApiListToPlaceListMapper()
     }
 
     @Test
     fun testMapper() {
-        val placeListTested = placeApiListToPlaceListMapper.apply(dummyPlaceApiList)
+        val placeListTested = mapper.apply(dummyPlaceApiList)
 
         assertEquals(dummyPlaceListExpected.size, placeListTested.size)
         placeListTested.forEachIndexed { index, place ->
