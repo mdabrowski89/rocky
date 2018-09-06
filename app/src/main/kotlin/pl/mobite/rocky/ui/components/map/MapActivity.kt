@@ -4,12 +4,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLngBounds
-import com.jakewharton.rxbinding2.widget.RxTextView
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -17,10 +14,8 @@ import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.model.MarkerData
 import pl.mobite.rocky.ui.components.map.MapIntent.*
-import pl.mobite.rocky.utils.CustomTextWatcher
 import pl.mobite.rocky.utils.RockyViewModelFactory
 import pl.mobite.rocky.utils.dpToPx
-import pl.mobite.rocky.utils.setVisibleOrGone
 
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -43,14 +38,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        // TODO: extract search view controls to custom view
-        clearButton.setOnClickListener { queryInput.setText("") }
-        queryInput.addTextChangedListener(object : CustomTextWatcher() {
-            override fun afterTextChanged(s: Editable?) {
-                clearButton.setVisibleOrGone(queryInput.text.isNotEmpty())
-            }
-        })
 
         /* When developer option "Do not keep activities" is checked and we move app to recent screen and open app again,
         the ViewModel is destroyed and recreated, and our view is in default state.
@@ -114,16 +101,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchIntent(): Observable<SearchPlacesIntent> {
-        return RxTextView.editorActionEvents(queryInput) { action ->
-            action.actionId() == EditorInfo.IME_ACTION_SEARCH && queryInput.text.toString().isNotBlank()}
-                .map { SearchPlacesIntent(queryInput.text.toString()) }
+        return searchView
+                .searchEvent()
+                .map { query -> SearchPlacesIntent(query) }
     }
 
     private fun render(state: MapViewState) {
         saveViewStateState(state)
         with(state) {
 
-            refreshSearchView(isLoading)
+            searchView.setLoading(googleMap == null || isLoading)
 
             /* Handle error - display message and marked is as displayed */
             if (error != null && error.shouldDisplay.getAndSet(false)) {
@@ -177,14 +164,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         not be send based on current ViewState but rather based on user action */
         if (!mapViewState.isLoading) {
             lastViewState = mapViewState
-        }
-    }
-
-    private fun refreshSearchView(isLoading: Boolean) {
-        queryInput.isEnabled = googleMap != null && !isLoading
-        queryInput.text.toString().let {queryText ->
-            clearButton.setVisibleOrGone(queryText.isNotEmpty() && !isLoading)
-            queryProgress.setVisibleOrGone(queryText.isNotEmpty() && isLoading)
         }
     }
 
