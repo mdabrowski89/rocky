@@ -6,8 +6,8 @@ import pl.mobite.rocky.data.remote.MusicBrainzService
 import pl.mobite.rocky.data.remote.RetrofitProvider
 import pl.mobite.rocky.data.remote.services.PlaceApiServiceImpl
 import pl.mobite.rocky.data.repositories.place.PlaceRepositoryImpl
-import pl.mobite.rocky.ui.map.MapViewModel
-import pl.mobite.rocky.ui.map.MapViewState
+import pl.mobite.rocky.ui.components.map.MapViewModel
+import pl.mobite.rocky.ui.components.map.MapViewState
 
 
 class RockyViewModelFactory private constructor(private val args: Array<out Any?>) : ViewModelProvider.Factory {

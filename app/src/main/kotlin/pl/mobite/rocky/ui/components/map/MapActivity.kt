@@ -1,4 +1,4 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
 import pl.mobite.rocky.data.model.MarkerData
-import pl.mobite.rocky.ui.map.MapIntent.*
+import pl.mobite.rocky.ui.components.map.MapIntent.*
 import pl.mobite.rocky.utils.CustomTextWatcher
 import pl.mobite.rocky.utils.RockyViewModelFactory
 import pl.mobite.rocky.utils.dpToPx

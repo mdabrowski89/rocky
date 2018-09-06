@@ -1,4 +1,4 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -9,8 +9,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import pl.mobite.rocky.data.repositories.PlaceRepository
-import pl.mobite.rocky.ui.map.MapAction.*
-import pl.mobite.rocky.ui.map.MapResult.*
+import pl.mobite.rocky.ui.components.map.MapAction.*
+import pl.mobite.rocky.ui.components.map.MapResult.*
 import pl.mobite.rocky.utils.ImmediateSchedulerProvider
 import pl.mobite.rocky.utils.lazyMock
 

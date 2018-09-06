@@ -1,4 +1,4 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import android.support.annotation.VisibleForTesting
 import com.google.android.gms.maps.model.LatLng

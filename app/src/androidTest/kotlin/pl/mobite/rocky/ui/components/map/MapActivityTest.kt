@@ -1,4 +1,4 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*

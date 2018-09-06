@@ -1,11 +1,11 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import pl.mobite.rocky.data.repositories.PlaceRepository
-import pl.mobite.rocky.ui.map.MapAction.*
-import pl.mobite.rocky.ui.map.MapResult.*
+import pl.mobite.rocky.ui.components.map.MapAction.*
+import pl.mobite.rocky.ui.components.map.MapResult.*
 import pl.mobite.rocky.utils.SchedulerProvider
 import pl.mobite.rocky.utils.SimpleActionProcessor
 

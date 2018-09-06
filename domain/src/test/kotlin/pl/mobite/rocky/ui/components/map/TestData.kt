@@ -1,4 +1,4 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import pl.mobite.rocky.data.models.Place
 

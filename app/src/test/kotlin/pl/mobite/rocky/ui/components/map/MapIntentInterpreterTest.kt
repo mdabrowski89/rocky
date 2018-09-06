@@ -1,10 +1,10 @@
-package pl.mobite.rocky.ui.map
+package pl.mobite.rocky.ui.components.map
 
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import pl.mobite.rocky.ui.map.MapAction.*
-import pl.mobite.rocky.ui.map.MapIntent.*
+import pl.mobite.rocky.ui.components.map.MapAction.*
+import pl.mobite.rocky.ui.components.map.MapIntent.*
 
 
 class MapIntentInterpreterTest {
