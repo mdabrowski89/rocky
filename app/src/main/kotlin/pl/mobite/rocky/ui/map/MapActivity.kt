@@ -28,7 +28,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
 
     private val mapReadyRelay = PublishRelay.create<MapReadyIntent>()
-    private val errorDisplayedRelay = PublishRelay.create<ErrorDisplayedIntent>()
     private val allMarkersGoneRelay = PublishRelay.create<AllMarkersGoneIntent>()
     private val markerClickedRelay = PublishRelay.create<String>()
 
@@ -45,6 +44,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        // TODO: extract search view controls to custom view
         clearButton.setOnClickListener { queryInput.setText("") }
         queryInput.addTextChangedListener(object : CustomTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
@@ -88,7 +88,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         return Observable.merge(listOf(
                 mapReadyRelay,
                 searchIntent(),
-                errorDisplayedRelay,
                 allMarkersGoneRelay))
     }
 
@@ -126,10 +125,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             refreshSearchView(isLoading)
 
-            /* Handle error - display message and clear error */
-            error?.let {
-                showErrorMessage(it)
-                errorDisplayedRelay.accept(ErrorDisplayedIntent)
+            /* Handle error - display message and marked is as displayed */
+            if (error != null && error.shouldDisplay.getAndSet(false)) {
+                showErrorMessage()
                 return
             }
 
@@ -228,7 +226,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         Toast.makeText(this@MapActivity, R.string.map_api_empty_list, Toast.LENGTH_SHORT).show()
     }
 
-    private fun showErrorMessage(error: Throwable) {
+    private fun showErrorMessage() {
         Toast.makeText(this@MapActivity, R.string.map_api_loading_error, Toast.LENGTH_SHORT).show()
     }
 

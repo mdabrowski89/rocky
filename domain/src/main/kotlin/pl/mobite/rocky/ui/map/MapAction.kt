@@ -8,6 +8,4 @@ sealed class MapAction {
     data class LoadPlacesAction(val query: String): MapAction()
 
     object ClearSearchResultsAction: MapAction()
-
-    object ClearErrorAction: MapAction()
 }

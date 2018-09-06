@@ -45,7 +45,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:padding="8dp"
-                android:background="?selectableItemBackground"
+                android:background="?android:selectableItemBackground"
                 android:src="@drawable/ic_close"
                 android:visibility="gone"/>
 

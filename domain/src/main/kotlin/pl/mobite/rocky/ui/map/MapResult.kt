@@ -17,6 +17,4 @@ sealed class MapResult {
     }
 
     object ClearSearchResultsResult: MapResult()
-
-    object ClearErrorResult: MapResult()
 }

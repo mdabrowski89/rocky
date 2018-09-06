@@ -10,7 +10,6 @@ class MapIntentInterpreter: Function<MapIntent, MapAction> {
             is MapIntent.MapReadyIntent -> MapAction.ReRenderAction
             is MapIntent.SearchPlacesIntent -> MapAction.LoadPlacesAction(intent.query)
             is MapIntent.AllMarkersGoneIntent -> MapAction.ClearSearchResultsAction
-            is MapIntent.ErrorDisplayedIntent -> MapAction.ClearErrorAction
         }
     }
 }

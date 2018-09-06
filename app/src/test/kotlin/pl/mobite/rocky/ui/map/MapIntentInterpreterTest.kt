@@ -23,7 +23,5 @@ class MapIntentInterpreterTest {
         assertEquals(LoadPlacesAction(dummyQuery), mapIntentInterpreter.apply(SearchPlacesIntent(dummyQuery)))
 
         assertEquals(ClearSearchResultsAction, mapIntentInterpreter.apply(AllMarkersGoneIntent))
-
-        assertEquals(ClearErrorAction, mapIntentInterpreter.apply(ErrorDisplayedIntent))
     }
 }

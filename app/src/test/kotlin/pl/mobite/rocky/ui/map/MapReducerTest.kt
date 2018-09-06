@@ -65,7 +65,7 @@ class MapReducerTest {
         val newState = mapReducer.apply(initialState, MapResult.LoadPlacesResult.Failure(dummyException))
 
         assertEquals(initialState.markerDataList, newState.markerDataList)
-        assertEquals(dummyException, newState.error)
+        assertEquals(dummyException, newState.error?.throwable)
         assertEquals(false, newState.isLoading)
         assertEquals(initialState.dataCreationTimestamp, newState.dataCreationTimestamp)
         assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
@@ -79,17 +79,6 @@ class MapReducerTest {
         assertEquals(initialState.error, newState.error)
         assertEquals(initialState.isLoading, newState.isLoading)
         assertEquals(null, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
-    }
-
-    @Test
-    fun testClearErrorResult() {
-        val newState = mapReducer.apply(initialState, MapResult.ClearErrorResult)
-
-        assertEquals(initialState.markerDataList, newState.markerDataList)
-        assertEquals(null, newState.error)
-        assertEquals(initialState.isLoading, newState.isLoading)
-        assertEquals(initialState.dataCreationTimestamp, newState.dataCreationTimestamp)
         assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
     }
 }

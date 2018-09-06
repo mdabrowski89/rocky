@@ -95,16 +95,4 @@ class MapActionProcessorTest {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
-
-    @Test
-    fun testClearErrorAction() {
-        mapActionProcessor.apply(Observable.just(ClearErrorAction))
-                .subscribe(testObserver)
-
-        testObserver.assertValueSequence(listOf(
-                ClearErrorResult
-        ))
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-    }
 }

@@ -19,8 +19,7 @@ class MapActionProcessor(
             Observable.merge(listOf(
                     shared.ofType(ReRenderAction::class.java).compose(reRenderProcessor),
                     shared.ofType(LoadPlacesAction::class.java).compose(loadPlacesProcessor),
-                    shared.ofType(ClearSearchResultsAction::class.java).compose(clearSearchResultsProcessor),
-                    shared.ofType(ClearErrorAction::class.java).compose(clearErrorProcessor)
+                    shared.ofType(ClearSearchResultsAction::class.java).compose(clearSearchResultsProcessor)
             ))
         }
     }
@@ -29,18 +28,16 @@ class MapActionProcessor(
         actions.switchMap { action ->
             placeRepository.getPlacesFrom1990(action.query)
                     .toObservable()
-                    .map { places -> MapResult.LoadPlacesResult.Success(places, System.currentTimeMillis()) }
-                    .cast(MapResult.LoadPlacesResult::class.java)
-                    .onErrorReturn { t -> MapResult.LoadPlacesResult.Failure(t) }
+                    .map { places -> LoadPlacesResult.Success(places, System.currentTimeMillis()) }
+                    .cast(LoadPlacesResult::class.java)
+                    .onErrorReturn { t -> LoadPlacesResult.Failure(t) }
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .startWith(MapResult.LoadPlacesResult.InFlight)
+                    .startWith(LoadPlacesResult.InFlight)
         }
     }
 
     private val reRenderProcessor = SimpleActionProcessor<ReRenderAction, ReRenderResult>(ReRenderResult)
-
-    private val clearErrorProcessor = SimpleActionProcessor<ClearErrorAction, ClearErrorResult>(ClearErrorResult)
 
     private val clearSearchResultsProcessor = SimpleActionProcessor<ClearSearchResultsAction, ClearSearchResultsResult>(ClearSearchResultsResult)
 

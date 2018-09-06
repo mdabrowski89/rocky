@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.functions.BiFunction
 import pl.mobite.rocky.data.model.MarkerData
+import pl.mobite.rocky.data.model.ViewStateError
 import pl.mobite.rocky.data.models.Place
 
 class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
@@ -19,10 +20,9 @@ class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
                     is MapResult.LoadPlacesResult.Success ->
                         prevState.copy(isLoading = false, error = null, markerDataList = result.places.toMarkerDataList(), dataCreationTimestamp = result.timestamp)
                     is MapResult.LoadPlacesResult.Failure ->
-                        prevState.copy(isLoading = false, error = result.throwable)
+                        prevState.copy(isLoading = false, error = ViewStateError(result.throwable))
                 }
             is MapResult.ClearSearchResultsResult -> prevState.copy(markerDataList = emptyList(), dataCreationTimestamp = null)
-            is MapResult.ClearErrorResult -> prevState.copy(error = null)
         }
     }
 }
