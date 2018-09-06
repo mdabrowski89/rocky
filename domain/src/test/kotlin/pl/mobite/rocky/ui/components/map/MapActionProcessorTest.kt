@@ -28,7 +28,7 @@ class MapActionProcessorTest {
     }
 
     @Test
-    fun testMReRenderAction() {
+    fun testReRenderAction() {
         mapActionProcessor.apply(Observable.just(ReRenderAction))
                 .subscribe(testObserver)
 
