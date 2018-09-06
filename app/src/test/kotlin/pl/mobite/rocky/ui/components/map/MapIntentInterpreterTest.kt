@@ -24,4 +24,9 @@ class MapIntentInterpreterTest {
 
         assertEquals(ClearSearchResultsAction, mapIntentInterpreter.apply(AllMarkersGoneIntent))
     }
+
+    companion object {
+
+        private const val dummyQuery = "query"
+    }
 }

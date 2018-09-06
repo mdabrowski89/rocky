@@ -9,6 +9,7 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import pl.mobite.rocky.data.remote.MusicBrainzService
 import pl.mobite.rocky.data.remote.models.PlaceApi
+import pl.mobite.rocky.data.remote.models.PlaceApiResponse
 import pl.mobite.rocky.data.remote.services.PlaceApiServiceImpl
 import pl.mobite.rocky.utils.lazyMock
 
@@ -101,5 +102,47 @@ class PlaceApiServiceImplTest {
         }
     }
 
-    private fun String.withYearFilter() = "$this AND begin:[1990 TO 2200]"
+    companion object {
+
+        private const val dummyQuery = "query"
+        private val dummyException = DummyException()
+
+        private fun String.withYearFilter() = "$this AND begin:[1990 TO 2200]"
+
+        private class DummyException: Throwable("dummy exception")
+
+        private fun createDummyPlaceApiResponseList(count: Int, queryLimit: Int): List<PlaceApiResponse> {
+            val pageNumbers = Math.ceil(count / queryLimit.toDouble()).toInt()
+            return (0 until pageNumbers).map { pageNumber ->
+                val firstId = pageNumber * queryLimit
+                val placeApiCount = if (pageNumber < pageNumbers - 1) queryLimit else count - (pageNumber * queryLimit)
+                PlaceApiResponse(null, count, getPageOffset(pageNumber, queryLimit), createDummyPlaceApiList(firstId, placeApiCount))
+            }
+        }
+
+        private fun createDummyPlaceApiList(firstId: Int, count: Int): List<PlaceApi> {
+            return (0 until count).map { i -> createDummyPlaceAPI(firstId + i) }
+        }
+
+        private fun createDummyPlaceAPI(id: Int) = PlaceApi(
+                id.toString(),
+                "Studio",
+                "23",
+                id * 10,
+                "Studio name $id",
+                "Studio address $id",
+                null,
+                null,
+                null)
+
+        private fun getPageOffset(pageNumber: Int, queryLimit: Int) = pageNumber * queryLimit
+
+        private fun List<PlaceApiResponse>.getAllPlaceApiAsList(): List<PlaceApi> {
+            val list = mutableListOf<PlaceApi>()
+            forEach { placeAPiResponse ->
+                placeAPiResponse.places?.let { list.addAll(it.filterNotNull()) }
+            }
+            return list
+        }
+    }
 }

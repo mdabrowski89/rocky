@@ -8,6 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
+import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapAction.*
 import pl.mobite.rocky.ui.components.map.MapResult.*
@@ -94,5 +95,20 @@ class MapActionProcessorTest {
         ))
         testObserver.assertComplete()
         testObserver.assertNoErrors()
+    }
+
+    companion object {
+
+        private const val dummyQuery = "query"
+
+        private val dummyPlaces = listOf(
+                Place("Test place 1", 1995, 12.4, 15.3),
+                Place("Test place 2", 2000, -10.1, 18.1),
+                Place("Test place 3", 2001, 15.7, 9.9)
+        )
+
+        private val dummyEmptyPlaces = emptyList<Place>()
+
+        private val dummyException = Throwable("dummy error")
     }
 }
