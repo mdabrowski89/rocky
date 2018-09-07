@@ -1,88 +1,131 @@
 package pl.mobite.rocky.ui.components.map
 
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import pl.mobite.rocky.data.model.MarkerData
+import pl.mobite.rocky.data.model.ViewStateError
 import pl.mobite.rocky.data.models.Place
-import pl.mobite.rocky.utils.assertMarkerDataListEquals
+import pl.mobite.rocky.ui.components.map.MapResult.*
+import pl.mobite.rocky.utils.assertMapViewState
 
 
 class MapReducerTest {
 
     private lateinit var reducer: MapReducer
-    private lateinit var initialState: MapViewState
 
     @Before
     fun setUp() {
         reducer = MapReducer()
-        initialState = MapViewState.default()
     }
 
     @Test
     fun testReRenderResult() {
-        val newState = reducer.apply(initialState, MapResult.ReRenderResult)
-
-        assertEquals(initialState.markerDataList, newState.markerDataList)
-        assertEquals(initialState.error, newState.error)
-        assertEquals(initialState.isLoading, newState.isLoading)
-        assertEquals(initialState.dataCreationTimestamp, newState.dataCreationTimestamp)
-        assertEquals(!initialState.reRenderFlag, newState.reRenderFlag)
+        testReRenderResult(createDefaultState())
+        testReRenderResult(createErrorState())
+        testReRenderResult(createLoadingState())
+        testReRenderResult(createPlacesLoadedState())
+        testReRenderResult(createPlacesLoadedButEmptyState())
     }
 
     @Test
     fun testLoadPlacesResultInFlight() {
-        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.InFlight)
-
-        assertEquals(initialState.markerDataList, newState.markerDataList)
-        assertEquals(null, newState.error)
-        assertEquals(true, newState.isLoading)
-        assertEquals(initialState.dataCreationTimestamp, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
+        testLoadPlacesResultInFlight(createDefaultState())
+        testLoadPlacesResultInFlight(createErrorState())
+        testLoadPlacesResultInFlight(createLoadingState())
+        testLoadPlacesResultInFlight(createPlacesLoadedState())
+        testLoadPlacesResultInFlight(createPlacesLoadedButEmptyState())
     }
 
     @Test
     fun testLoadPlacesResultSuccess() {
-        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyPlaces, dummyDataCreationTimestamp))
-
-        assertMarkerDataListEquals(dummyMarkerDataList, newState.markerDataList)
-        assertEquals(null, newState.error)
-        assertEquals(false, newState.isLoading)
-        assertEquals(dummyDataCreationTimestamp, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
+        testLoadPlacesResultSuccess(createDefaultState())
+        testLoadPlacesResultSuccess(createErrorState())
+        testLoadPlacesResultSuccess(createLoadingState())
+        testLoadPlacesResultSuccess(createPlacesLoadedState())
+        testLoadPlacesResultSuccess(createPlacesLoadedButEmptyState())
     }
 
     @Test
     fun testLoadPlacesResultSuccessButEmptyList() {
-        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Success(dummyEmptyPlaces, dummyDataCreationTimestamp))
-
-        assertEquals(dummyEmptyMarkerDataList, newState.markerDataList)
-        assertEquals(null, newState.error)
-        assertEquals(false, newState.isLoading)
-        assertEquals(dummyDataCreationTimestamp, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
+        testLoadPlacesResultSuccessButEmptyList(createDefaultState())
+        testLoadPlacesResultSuccessButEmptyList(createErrorState())
+        testLoadPlacesResultSuccessButEmptyList(createLoadingState())
+        testLoadPlacesResultSuccessButEmptyList(createPlacesLoadedState())
+        testLoadPlacesResultSuccessButEmptyList(createPlacesLoadedButEmptyState())
     }
 
     @Test
     fun testLoadPlacesResultFailure() {
-        val newState = reducer.apply(initialState, MapResult.LoadPlacesResult.Failure(dummyException))
-
-        assertEquals(initialState.markerDataList, newState.markerDataList)
-        assertEquals(dummyException, newState.error?.throwable)
-        assertEquals(false, newState.isLoading)
-        assertEquals(initialState.dataCreationTimestamp, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
+        testLoadPlacesResultFailure(createDefaultState())
+        testLoadPlacesResultFailure(createErrorState())
+        testLoadPlacesResultFailure(createLoadingState())
+        testLoadPlacesResultFailure(createPlacesLoadedState())
+        testLoadPlacesResultFailure(createPlacesLoadedButEmptyState())
     }
 
     @Test
     fun testClearSearchResultsResult() {
-        val newState = reducer.apply(initialState, MapResult.ClearSearchResultsResult)
+        testClearSearchResultsResult(createDefaultState())
+        testClearSearchResultsResult(createErrorState())
+        testClearSearchResultsResult(createLoadingState())
+        testClearSearchResultsResult(createPlacesLoadedState())
+        testClearSearchResultsResult(createPlacesLoadedButEmptyState())
+    }
 
-        assertEquals(dummyEmptyMarkerDataList, newState.markerDataList)
-        assertEquals(initialState.error, newState.error)
-        assertEquals(initialState.isLoading, newState.isLoading)
-        assertEquals(null, newState.dataCreationTimestamp)
-        assertEquals(initialState.reRenderFlag, newState.reRenderFlag)
+    private fun testReRenderResult(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                reRenderFlag = !initialState.reRenderFlag
+        )
+        testMapReducer(initialState, ReRenderResult, expectedState)
+    }
+
+    private fun testLoadPlacesResultInFlight(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                error = null,
+                isLoading = true
+        )
+        testMapReducer(initialState, LoadPlacesResult.InFlight, expectedState)
+    }
+
+    private fun testLoadPlacesResultSuccess(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                markerDataList = dummyList,
+                error = null,
+                isLoading = false,
+                dataCreationTimestamp = dummyTimestamp
+        )
+        testMapReducer(initialState, LoadPlacesResult.Success(dummyPlaces, dummyTimestamp), expectedState)
+    }
+
+    private fun testLoadPlacesResultSuccessButEmptyList(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                markerDataList = dummyEmptyList,
+                error = null,
+                isLoading = false,
+                dataCreationTimestamp = dummyTimestamp
+        )
+        testMapReducer(initialState, LoadPlacesResult.Success(dummyEmptyPlaces, dummyTimestamp), expectedState)
+    }
+
+    private fun testLoadPlacesResultFailure(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                error = ViewStateError(dummyException),
+                isLoading = false
+        )
+        testMapReducer(initialState, LoadPlacesResult.Failure(dummyException), expectedState)
+    }
+
+    private fun testClearSearchResultsResult(initialState: MapViewState) {
+        val expectedState = initialState.copy(
+                markerDataList = dummyEmptyList,
+                dataCreationTimestamp = null
+        )
+        testMapReducer(initialState, ClearSearchResultsResult, expectedState)
+    }
+
+    private fun testMapReducer(initialState: MapViewState, mapResult: MapResult, expectedState: MapViewState) {
+        val newState = reducer.apply(initialState, mapResult)
+        assertMapViewState(expectedState, newState)
     }
 
     companion object {
@@ -95,13 +138,28 @@ class MapReducerTest {
 
         private val dummyEmptyPlaces = emptyList<Place>()
 
-        private val dummyMarkerDataList = dummyPlaces.toMarkerDataList()
+        private val dummyList = dummyPlaces.toMarkerDataList()
 
-        private val dummyEmptyMarkerDataList = emptyList<MarkerData>()
+        private val dummyEmptyList = emptyList<MarkerData>()
 
         private val dummyException = Throwable("dummy error")
 
-        private val dummyDataCreationTimestamp = System.currentTimeMillis()
+        private val dummyTimestamp = System.currentTimeMillis()
 
+        private fun createDefaultState() = MapViewState.default()
+        private fun createLoadingState() = MapViewState.default().copy(
+                isLoading = true
+        )
+        private fun createPlacesLoadedState() = MapViewState.default().copy(
+                markerDataList = dummyList,
+                dataCreationTimestamp = dummyTimestamp
+        )
+        private fun createPlacesLoadedButEmptyState() = MapViewState.default().copy(
+                markerDataList = dummyEmptyList,
+                dataCreationTimestamp = dummyTimestamp
+        )
+        private fun createErrorState() = MapViewState.default().copy(
+                error = ViewStateError(dummyException)
+        )
     }
 }

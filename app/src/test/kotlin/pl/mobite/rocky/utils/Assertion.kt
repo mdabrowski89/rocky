@@ -1,21 +1,22 @@
 package pl.mobite.rocky.utils
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import pl.mobite.rocky.data.model.MarkerData
+import pl.mobite.rocky.ui.components.map.MapViewState
 
 
 /**
  * Custom assert function for testing markerDataList
  */
 fun assertMarkerDataListEquals(expectedMarkerDataList: List<MarkerData>, testedMakerDataList: List<MarkerData>) {
-    Assert.assertEquals(expectedMarkerDataList.size, testedMakerDataList.size)
+    assertEquals(expectedMarkerDataList.size, testedMakerDataList.size)
     expectedMarkerDataList.forEachIndexed { i, expectedMarkerData ->
         val testedMarkerData = testedMakerDataList[i]
-        Assert.assertEquals(expectedMarkerData.markerOptions.position.latitude, testedMarkerData.markerOptions.position.latitude, 0.0)
-        Assert.assertEquals(expectedMarkerData.markerOptions.position.longitude, testedMarkerData.markerOptions.position.longitude, 0.0)
-        Assert.assertEquals(expectedMarkerData.markerOptions.title, testedMarkerData.markerOptions.title)
-        Assert.assertEquals(expectedMarkerData.description, testedMarkerData.description)
-        Assert.assertEquals(expectedMarkerData.timeToLive, testedMarkerData.timeToLive)
+        assertEquals(expectedMarkerData.markerOptions.position.latitude, testedMarkerData.markerOptions.position.latitude, 0.0)
+        assertEquals(expectedMarkerData.markerOptions.position.longitude, testedMarkerData.markerOptions.position.longitude, 0.0)
+        assertEquals(expectedMarkerData.markerOptions.title, testedMarkerData.markerOptions.title)
+        assertEquals(expectedMarkerData.description, testedMarkerData.description)
+        assertEquals(expectedMarkerData.timeToLive, testedMarkerData.timeToLive)
     }
 }
 
@@ -35,4 +36,15 @@ fun areMarkerDataListEquals(expectedMarkerDataList: List<MarkerData>, testedMake
         return true
     }
     return false
+}
+
+/**
+ * Custom assert function for MapViewState
+ */
+fun assertMapViewState(expected: MapViewState, tested: MapViewState) {
+    assertMarkerDataListEquals(expected.markerDataList, tested.markerDataList)
+    assertEquals(expected.error?.throwable, tested.error?.throwable)
+    assertEquals(expected.isLoading, tested.isLoading)
+    assertEquals(expected.dataCreationTimestamp, tested.dataCreationTimestamp)
+    assertEquals(expected.reRenderFlag, tested.reRenderFlag)
 }
