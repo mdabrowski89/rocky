@@ -2,8 +2,6 @@ package pl.mobite.rocky.ui.components.map
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.observers.TestObserver
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import pl.mobite.rocky.data.model.MarkerData
@@ -19,18 +17,6 @@ import pl.mobite.rocky.utils.lazyMock
 class MapViewModelTest {
 
     private val placeRepositoryMock: PlaceRepository by lazyMock()
-
-    private lateinit var viewModel: MapViewModel
-    private lateinit var testObserver: TestObserver<MapViewState>
-
-    private lateinit var initialState: MapViewState
-
-    @Before
-    fun setUp() {
-        viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance)
-        testObserver = viewModel.states().test()
-        initialState = MapViewState.default()
-    }
 
     @Test
     fun testMapReadyIntent() {
@@ -250,8 +236,8 @@ class MapViewModelTest {
     }
 
     private fun testViewModel(initialState: MapViewState, intents: List<MapIntent>, expectedStates: List<MapViewState>) {
-        viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance, initialState)
-        testObserver = viewModel.states().test()
+        val viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance, initialState)
+        val testObserver = viewModel.states().test()
 
         val expectedStatesDistinct = expectedStates.distinctUntilChanged()
 
