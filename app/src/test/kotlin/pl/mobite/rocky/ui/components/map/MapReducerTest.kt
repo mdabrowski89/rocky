@@ -20,56 +20,44 @@ class MapReducerTest {
 
     @Test
     fun testReRenderResult() {
-        testReRenderResult(createDefaultState())
-        testReRenderResult(createErrorState())
-        testReRenderResult(createLoadingState())
-        testReRenderResult(createPlacesLoadedState())
-        testReRenderResult(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testReRenderResult(initialState)
+        }
     }
 
     @Test
     fun testLoadPlacesResultInFlight() {
-        testLoadPlacesResultInFlight(createDefaultState())
-        testLoadPlacesResultInFlight(createErrorState())
-        testLoadPlacesResultInFlight(createLoadingState())
-        testLoadPlacesResultInFlight(createPlacesLoadedState())
-        testLoadPlacesResultInFlight(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testLoadPlacesResultInFlight(initialState)
+        }
     }
 
     @Test
     fun testLoadPlacesResultSuccess() {
-        testLoadPlacesResultSuccess(createDefaultState())
-        testLoadPlacesResultSuccess(createErrorState())
-        testLoadPlacesResultSuccess(createLoadingState())
-        testLoadPlacesResultSuccess(createPlacesLoadedState())
-        testLoadPlacesResultSuccess(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testLoadPlacesResultSuccess(initialState)
+        }
     }
 
     @Test
     fun testLoadPlacesResultSuccessButEmptyList() {
-        testLoadPlacesResultSuccessButEmptyList(createDefaultState())
-        testLoadPlacesResultSuccessButEmptyList(createErrorState())
-        testLoadPlacesResultSuccessButEmptyList(createLoadingState())
-        testLoadPlacesResultSuccessButEmptyList(createPlacesLoadedState())
-        testLoadPlacesResultSuccessButEmptyList(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testLoadPlacesResultSuccessButEmptyList(initialState)
+        }
     }
 
     @Test
     fun testLoadPlacesResultFailure() {
-        testLoadPlacesResultFailure(createDefaultState())
-        testLoadPlacesResultFailure(createErrorState())
-        testLoadPlacesResultFailure(createLoadingState())
-        testLoadPlacesResultFailure(createPlacesLoadedState())
-        testLoadPlacesResultFailure(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testLoadPlacesResultFailure(initialState)
+        }
     }
 
     @Test
     fun testClearSearchResultsResult() {
-        testClearSearchResultsResult(createDefaultState())
-        testClearSearchResultsResult(createErrorState())
-        testClearSearchResultsResult(createLoadingState())
-        testClearSearchResultsResult(createPlacesLoadedState())
-        testClearSearchResultsResult(createPlacesLoadedButEmptyState())
+        initialStates.forEach { initialState ->
+            testClearSearchResultsResult(initialState)
+        }
     }
 
     private fun testReRenderResult(initialState: MapViewState) {
@@ -146,20 +134,22 @@ class MapReducerTest {
 
         private val dummyTimestamp = System.currentTimeMillis()
 
-        private fun createDefaultState() = MapViewState.default()
-        private fun createLoadingState() = MapViewState.default().copy(
-                isLoading = true
-        )
-        private fun createPlacesLoadedState() = MapViewState.default().copy(
-                markerDataList = dummyList,
-                dataCreationTimestamp = dummyTimestamp
-        )
-        private fun createPlacesLoadedButEmptyState() = MapViewState.default().copy(
-                markerDataList = dummyEmptyList,
-                dataCreationTimestamp = dummyTimestamp
-        )
-        private fun createErrorState() = MapViewState.default().copy(
-                error = ViewStateError(dummyException)
+        private val initialStates = listOf(
+                MapViewState.default(),
+                MapViewState.default().copy(
+                        isLoading = true
+                ),
+                MapViewState.default().copy(
+                        markerDataList = dummyList,
+                        dataCreationTimestamp = dummyTimestamp
+                ),
+                MapViewState.default().copy(
+                        markerDataList = dummyEmptyList,
+                        dataCreationTimestamp = dummyTimestamp
+                ),
+                MapViewState.default().copy(
+                        error = ViewStateError(dummyException)
+                )
         )
     }
 }

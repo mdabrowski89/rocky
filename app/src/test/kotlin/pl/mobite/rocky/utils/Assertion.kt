@@ -1,6 +1,6 @@
 package pl.mobite.rocky.utils
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import pl.mobite.rocky.data.model.MarkerData
 import pl.mobite.rocky.ui.components.map.MapViewState
 
@@ -41,10 +41,14 @@ fun areMarkerDataListEquals(expectedMarkerDataList: List<MarkerData>, testedMake
 /**
  * Custom assert function for MapViewState
  */
-fun assertMapViewState(expected: MapViewState, tested: MapViewState) {
+fun assertMapViewState(expected: MapViewState, tested: MapViewState, assertExactTimestamp: Boolean = true) {
     assertMarkerDataListEquals(expected.markerDataList, tested.markerDataList)
-    assertEquals(expected.error?.throwable, tested.error?.throwable)
+    assertEquals("asd", expected.error?.throwable, tested.error?.throwable)
     assertEquals(expected.isLoading, tested.isLoading)
-    assertEquals(expected.dataCreationTimestamp, tested.dataCreationTimestamp)
+    when {
+        assertExactTimestamp -> assertEquals(expected.dataCreationTimestamp, tested.dataCreationTimestamp)
+        expected.dataCreationTimestamp == null -> assertNull(tested.dataCreationTimestamp)
+        else -> assertNotNull(tested.dataCreationTimestamp)
+    }
     assertEquals(expected.reRenderFlag, tested.reRenderFlag)
 }
