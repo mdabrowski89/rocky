@@ -11,6 +11,7 @@ import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapIntent.*
 import pl.mobite.rocky.utils.ImmediateSchedulerProvider
 import pl.mobite.rocky.utils.assertMapViewState
+import pl.mobite.rocky.utils.distinctUntilChanged
 import pl.mobite.rocky.utils.lazyMock
 
 
@@ -250,17 +251,6 @@ class MapViewModelTest {
         }
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
-    }
-
-    private fun <T> List<T>.distinctUntilChanged(): List<T> {
-        val distinctUtilChangedList = mutableListOf<T>()
-        forEachIndexed { i, item ->
-            val prevItem = getOrNull(i -1)
-            if (prevItem == null || prevItem != item) {
-                distinctUtilChangedList.add(item)
-            }
-        }
-        return distinctUtilChangedList
     }
 
     companion object {
