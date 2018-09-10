@@ -4,7 +4,7 @@ import org.junit.Before
 import org.junit.Test
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.ui.components.map.MapResult.*
-import pl.mobite.rocky.utils.StateTransformer
+import pl.mobite.rocky.utils.MapViewStateModifier
 import pl.mobite.rocky.utils.assertMapViewState
 
 
@@ -65,8 +65,8 @@ class MapReducerTest {
         initialStates.forEach(test(mapResult, stateTransformer))
     }
 
-    private fun test(result: MapResult, stateTransformer: StateTransformer<MapViewState>) = { initialState: MapViewState ->
-        val expectedState = stateTransformer(initialState)
+    private fun test(result: MapResult, stateModifier: MapViewStateModifier) = { initialState: MapViewState ->
+        val expectedState = stateModifier(initialState)
         val testedState = reducer.apply(initialState, result)
 
         assertMapViewState(expectedState, testedState)

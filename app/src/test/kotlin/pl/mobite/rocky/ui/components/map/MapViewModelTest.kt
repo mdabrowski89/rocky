@@ -19,7 +19,7 @@ class MapViewModelTest {
         val intents = listOf(
                 MapReadyIntent
         )
-        val stateTransformers = listOf(
+        val stateTransformers = listOf<MapViewStateModifier>(
                 MapViewState::reRender
         )
 
@@ -33,9 +33,9 @@ class MapViewModelTest {
         val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
-        val stateTransformers = listOf(
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) }
+        val stateTransformers = listOf<MapViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withData(dummyData, dummyTimestamp) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -49,10 +49,10 @@ class MapViewModelTest {
                 SearchPlacesIntent(dummyQuery),
                 AllMarkersGoneIntent
         )
-        val stateTransformers = listOf(
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },
-                { state: MapViewState -> state.clearData() }
+        val stateTransformers = listOf<MapViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withData(dummyData, dummyTimestamp) },
+                { state -> state.clearData() }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -65,9 +65,9 @@ class MapViewModelTest {
         val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
-        val stateTransformers = listOf(
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withData(emptyList(), dummyTimestamp) }
+        val stateTransformers = listOf<MapViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withData(emptyList(), dummyTimestamp) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -80,9 +80,9 @@ class MapViewModelTest {
         val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
-        val stateTransformers = listOf(
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<MapViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -106,19 +106,19 @@ class MapViewModelTest {
                 SearchPlacesIntent(dummyQuery2),
                 AllMarkersGoneIntent
         )
-        val stateTransformers = listOf(
-                { state: MapViewState -> state.reRender() },
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },
-                { state: MapViewState -> state.loading() },
-                { state: MapViewState -> state.withError(dummyThrowable) },
-                { state: MapViewState -> state.clearData() }
+        val stateTransformers = listOf<MapViewStateModifier>(
+                { state -> state.reRender() },
+                { state -> state.loading() },
+                { state -> state.withData(dummyData, dummyTimestamp) },
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) },
+                { state -> state.clearData() }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
     }
 
-    private fun test(intents: List<MapIntent>, stateTransformers: List<StateTransformer<MapViewState>>) = { initialState: MapViewState ->
+    private fun test(intents: List<MapIntent>, stateTransformers: List<StateModifier<MapViewState>>) = { initialState: MapViewState ->
         val expectedStates = createExpectedStates(initialState, stateTransformers)
         test(initialState, intents, expectedStates)
     }

@@ -8,7 +8,9 @@ import org.mockito.Mockito.`when`
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapAction.*
-import pl.mobite.rocky.ui.components.map.MapResult.*
+import pl.mobite.rocky.ui.components.map.MapResult.ClearSearchResultsResult
+import pl.mobite.rocky.ui.components.map.MapResult.LoadPlacesResult.*
+import pl.mobite.rocky.ui.components.map.MapResult.ReRenderResult
 import pl.mobite.rocky.utils.ImmediateSchedulerProvider
 import pl.mobite.rocky.utils.assertMapResult
 import pl.mobite.rocky.utils.lazyMock
@@ -19,68 +21,78 @@ class MapActionProcessorTest {
 
     @Test
     fun testReRenderAction() {
-        val mapAction = ReRenderAction
+        val actions = listOf(
+                ReRenderAction
+        )
         val expectedResults = listOf(
                 ReRenderResult
         )
 
-        test(mapAction, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testLoadPlacesActionSuccess() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
-        val mapAction = LoadPlacesAction(dummyQuery)
+        val actions = listOf(
+                LoadPlacesAction(dummyQuery)
+        )
         val expectedResults = listOf(
-                LoadPlacesResult.InFlight,
-                LoadPlacesResult.Success(dummyPlaces, 0)
+                InFlight,
+                Success(dummyPlaces, 0)
         )
 
-        test(mapAction, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testLoadPlacesActionSuccessButEmptyList() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
-        val mapAction = LoadPlacesAction(dummyQuery)
+        val actions = listOf(
+                LoadPlacesAction(dummyQuery)
+        )
         val expectedResults = listOf(
-                LoadPlacesResult.InFlight,
-                LoadPlacesResult.Success(emptyList(), 0)
+                InFlight,
+                Success(emptyList(), 0)
         )
 
-        test(mapAction, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testLoadPlacesActionFailure() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
 
-        val mapAction = LoadPlacesAction(dummyQuery)
+        val actions = listOf(
+                LoadPlacesAction(dummyQuery)
+        )
         val expectedResults = listOf(
-                LoadPlacesResult.InFlight,
-                LoadPlacesResult.Failure(dummyException)
+                InFlight,
+                Failure(dummyException)
         )
 
-        test(mapAction, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testClearSearchResultsAction() {
-        val mapAction = ClearSearchResultsAction
+        val actions = listOf(
+                ClearSearchResultsAction
+        )
         val expectedResults = listOf(
                 ClearSearchResultsResult
         )
 
-        test(mapAction, expectedResults)
+        test(actions, expectedResults)
     }
 
-    private fun test(action: MapAction, expectedResults: List<MapResult>) {
+    private fun test(actions: List<MapAction>, expectedResults: List<MapResult>) {
         val processor = MapActionProcessor(placeRepositoryMock, ImmediateSchedulerProvider.instance)
         val testObserver = TestObserver<MapResult>()
 
-        processor.apply(Observable.just(action)).subscribe(testObserver)
+        processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)
 
         testObserver.assertValueCount(expectedResults.size)
 
