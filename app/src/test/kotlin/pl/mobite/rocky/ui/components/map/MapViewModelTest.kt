@@ -16,10 +16,10 @@ class MapViewModelTest {
 
     @Test
     fun testMapReadyIntent() {
-        val intents = listOf<MapIntent>(
+        val intents = listOf(
                 MapReadyIntent
         )
-        val stateTransformers = listOf (
+        val stateTransformers = listOf(
                 MapViewState::reRender
         )
 
@@ -29,7 +29,8 @@ class MapViewModelTest {
     @Test
     fun testSearchPlacesIntentSuccess() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
-        val intents = listOf<MapIntent>(
+
+        val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
         val stateTransformers = listOf(
@@ -43,11 +44,12 @@ class MapViewModelTest {
     @Test
     fun testSearchPlacesIntentSuccessAndAllMarkersGone() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
-        val intents = listOf (
+
+        val intents = listOf(
                 SearchPlacesIntent(dummyQuery),
                 AllMarkersGoneIntent
         )
-        val stateTransformers = listOf (
+        val stateTransformers = listOf(
                 { state: MapViewState -> state.loading() },
                 { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },
                 { state: MapViewState -> state.clearData() }
@@ -59,10 +61,11 @@ class MapViewModelTest {
     @Test
     fun testSearchPlacesIntentSuccessButEmptyList() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
-        val intents = listOf<MapIntent>(
+
+        val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
-        val stateTransformers = listOf (
+        val stateTransformers = listOf(
                 { state: MapViewState -> state.loading() },
                 { state: MapViewState -> state.withData(emptyList(), dummyTimestamp) }
         )
@@ -73,10 +76,11 @@ class MapViewModelTest {
     @Test
     fun testSearchPlacesIntentFailure() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyThrowable))
-        val intents = listOf<MapIntent>(
+
+        val intents = listOf(
                 SearchPlacesIntent(dummyQuery)
         )
-        val stateTransformers = listOf (
+        val stateTransformers = listOf(
                 { state: MapViewState -> state.loading() },
                 { state: MapViewState -> state.withError(dummyThrowable) }
         )
@@ -95,13 +99,14 @@ class MapViewModelTest {
     fun testUsageScenario() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenReturn(Single.error(dummyThrowable))
+
         val intents = listOf(
                 MapReadyIntent,
                 SearchPlacesIntent(dummyQuery),
                 SearchPlacesIntent(dummyQuery2),
                 AllMarkersGoneIntent
         )
-        val stateTransformers = listOf (
+        val stateTransformers = listOf(
                 { state: MapViewState -> state.reRender() },
                 { state: MapViewState -> state.loading() },
                 { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },

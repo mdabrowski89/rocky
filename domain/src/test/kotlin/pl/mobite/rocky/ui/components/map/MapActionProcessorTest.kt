@@ -20,7 +20,9 @@ class MapActionProcessorTest {
     @Test
     fun testReRenderAction() {
         val mapAction = ReRenderAction
-        val expectedResults = listOf(ReRenderResult)
+        val expectedResults = listOf(
+                ReRenderResult
+        )
 
         test(mapAction, expectedResults)
     }
@@ -67,7 +69,9 @@ class MapActionProcessorTest {
     @Test
     fun testClearSearchResultsAction() {
         val mapAction = ClearSearchResultsAction
-        val expectedResults = listOf(ClearSearchResultsResult)
+        val expectedResults = listOf(
+                ClearSearchResultsResult
+        )
 
         test(mapAction, expectedResults)
     }

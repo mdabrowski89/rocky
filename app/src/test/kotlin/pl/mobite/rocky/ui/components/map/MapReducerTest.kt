@@ -19,42 +19,42 @@ class MapReducerTest {
 
     @Test
     fun testReRenderResult() {
-        val mapResult = ReRenderResult
+        val result = ReRenderResult
         val stateTransformer = MapViewState::reRender
 
-        initialStates.forEach(test(mapResult, stateTransformer))
+        initialStates.forEach(test(result, stateTransformer))
     }
 
     @Test
     fun testLoadPlacesResultInFlight() {
-        val mapResult = LoadPlacesResult.InFlight
+        val result = LoadPlacesResult.InFlight
         val stateTransformer = MapViewState::loading
 
-        initialStates.forEach(test(mapResult, stateTransformer))
+        initialStates.forEach(test(result, stateTransformer))
     }
 
     @Test
     fun testLoadPlacesResultSuccess() {
-        val mapResult = LoadPlacesResult.Success(dummyPlaces, dummyTimestamp)
-        val stateTransformer = { initialState: MapViewState -> initialState.withData(dummyData, dummyTimestamp)}
+        val result = LoadPlacesResult.Success(dummyPlaces, dummyTimestamp)
+        val stateTransformer = { state: MapViewState -> state.withData(dummyData, dummyTimestamp)}
 
-        initialStates.forEach(test(mapResult, stateTransformer))
+        initialStates.forEach(test(result, stateTransformer))
     }
 
     @Test
     fun testLoadPlacesResultSuccessButEmptyList() {
-        val mapResult = LoadPlacesResult.Success(emptyList(), dummyTimestamp)
-        val stateTransformer = { initialState: MapViewState -> initialState.withData(emptyList(), dummyTimestamp)}
+        val result = LoadPlacesResult.Success(emptyList(), dummyTimestamp)
+        val stateTransformer = { state: MapViewState -> state.withData(emptyList(), dummyTimestamp)}
 
-        initialStates.forEach(test(mapResult, stateTransformer))
+        initialStates.forEach(test(result, stateTransformer))
     }
 
     @Test
     fun testLoadPlacesResultFailure() {
-        val mapResult = LoadPlacesResult.Failure(dummyThrowable)
-        val stateTransformer = { initialState: MapViewState -> initialState.withError(dummyThrowable)}
+        val result = LoadPlacesResult.Failure(dummyThrowable)
+        val stateTransformer = { state: MapViewState -> state.withError(dummyThrowable)}
 
-        initialStates.forEach(test(mapResult, stateTransformer))
+        initialStates.forEach(test(result, stateTransformer))
     }
 
     @Test
@@ -67,8 +67,9 @@ class MapReducerTest {
 
     private fun test(result: MapResult, stateTransformer: StateTransformer<MapViewState>) = { initialState: MapViewState ->
         val expectedState = stateTransformer(initialState)
-        val newState = reducer.apply(initialState, result)
-        assertMapViewState(expectedState, newState)
+        val testedState = reducer.apply(initialState, result)
+
+        assertMapViewState(expectedState, testedState)
     }
 
     companion object {
