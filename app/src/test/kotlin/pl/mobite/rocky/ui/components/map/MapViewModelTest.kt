@@ -4,15 +4,10 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.model.MarkerData
-import pl.mobite.rocky.data.model.ViewStateError
 import pl.mobite.rocky.data.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapIntent.*
-import pl.mobite.rocky.utils.ImmediateSchedulerProvider
-import pl.mobite.rocky.utils.assertMapViewState
-import pl.mobite.rocky.utils.distinctUntilChanged
-import pl.mobite.rocky.utils.lazyMock
+import pl.mobite.rocky.utils.*
 
 
 class MapViewModelTest {
@@ -24,10 +19,11 @@ class MapViewModelTest {
         val intents = listOf<MapIntent>(
                 MapReadyIntent
         )
+        val stateTransformers = listOf (
+                MapViewState::reRender
+        )
 
-        initialStates.forEach { initialState ->
-            testMapReadyIntent(initialState, intents)
-        }
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
     @Test
@@ -36,10 +32,12 @@ class MapViewModelTest {
         val intents = listOf<MapIntent>(
                 SearchPlacesIntent(dummyQuery)
         )
+        val stateTransformers = listOf(
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) }
+        )
 
-        initialStates.forEach { initialState ->
-            testSearchPlacesIntentSuccess(initialState, intents)
-        }
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
     @Test
@@ -49,34 +47,41 @@ class MapViewModelTest {
                 SearchPlacesIntent(dummyQuery),
                 AllMarkersGoneIntent
         )
+        val stateTransformers = listOf (
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },
+                { state: MapViewState -> state.clearData() }
+        )
 
-        initialStates.forEach { initialState ->
-            testSearchPlacesIntentSuccessAndAllMarkersGone(initialState, intents)
-        }
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
     @Test
     fun testSearchPlacesIntentSuccessButEmptyList() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyEmptyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
         val intents = listOf<MapIntent>(
                 SearchPlacesIntent(dummyQuery)
         )
+        val stateTransformers = listOf (
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withData(emptyList(), dummyTimestamp) }
+        )
 
-        initialStates.forEach { initialState ->
-            testSearchPlacesIntentSuccessButEmptyList(initialState, intents)
-        }
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
     @Test
     fun testSearchPlacesIntentFailure() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyThrowable))
         val intents = listOf<MapIntent>(
                 SearchPlacesIntent(dummyQuery)
         )
+        val stateTransformers = listOf (
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withError(dummyThrowable) }
+        )
 
-        initialStates.forEach { initialState ->
-            testSearchPlacesIntentFailure(initialState, intents)
-        }
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
     /* Test the fallowing scenario
@@ -89,165 +94,40 @@ class MapViewModelTest {
     @Test
     fun testUsageScenario() {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenReturn(Single.error(dummyException))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenReturn(Single.error(dummyThrowable))
         val intents = listOf(
                 MapReadyIntent,
                 SearchPlacesIntent(dummyQuery),
                 SearchPlacesIntent(dummyQuery2),
                 AllMarkersGoneIntent
         )
-
-        initialStates.forEach { initialState ->
-            testUsageScenario(initialState, intents)
-        }
-    }
-
-    private fun testMapReadyIntent(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag
-                )
+        val stateTransformers = listOf (
+                { state: MapViewState -> state.reRender() },
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withData(dummyData, dummyTimestamp) },
+                { state: MapViewState -> state.loading() },
+                { state: MapViewState -> state.withError(dummyThrowable) },
+                { state: MapViewState -> state.clearData() }
         )
 
-        testViewModel(initialState, intents, expectedStates)
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
-    private fun testSearchPlacesIntentSuccess(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                initialState.copy(
-                        isLoading = true,
-                        error = null
-                ),
-                initialState.copy(
-                        isLoading = false,
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = null
-                )
-        )
-
-        testViewModel(initialState, intents, expectedStates)
+    private fun test(intents: List<MapIntent>, stateTransformers: List<StateTransformer<MapViewState>>) = { initialState: MapViewState ->
+        val expectedStates = createExpectedStates(initialState, stateTransformers)
+        test(initialState, intents, expectedStates)
     }
 
-    private fun testSearchPlacesIntentSuccessAndAllMarkersGone(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                initialState.copy(
-                        isLoading = true,
-                        error = null
-                ),
-                initialState.copy(
-                        isLoading = false,
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = null
-                ),
-                initialState.copy(
-                        isLoading = false,
-                        markerDataList = emptyList(),
-                        dataCreationTimestamp = null,
-                        error = null
-                )
-        )
-
-        testViewModel(initialState, intents, expectedStates)
-    }
-
-    private fun testSearchPlacesIntentSuccessButEmptyList(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                initialState.copy(
-                        isLoading = true,
-                        error = null
-                ),
-                initialState.copy(
-                        isLoading = false,
-                        markerDataList = dummyEmptyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = null
-                )
-        )
-        testViewModel(initialState, intents, expectedStates)
-    }
-
-    private fun testSearchPlacesIntentFailure(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                initialState.copy(
-                        isLoading = true,
-                        error = null
-                ),
-                initialState.copy(
-                        isLoading = false,
-                        error = ViewStateError(dummyException)
-                )
-        )
-        testViewModel(initialState, intents, expectedStates)
-    }
-
-    private fun testUsageScenario(initialState: MapViewState, intents: List<MapIntent>) {
-        val expectedStates = listOf(
-                initialState,
-                /* Map ready - re render state */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag
-                ),
-                /* First query loading */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag,
-                        isLoading = true,
-                        error = null
-                ),
-                /* First query results */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag,
-                        isLoading = false,
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = null
-                ),
-                /* Second query loading - results still from first query */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag,
-                        isLoading = true,
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = null
-                ),
-                /* Second query error - results still from first query */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag,
-                        isLoading = false,
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp,
-                        error = ViewStateError(dummyException)
-                ),
-                /* All makers disappear */
-                initialState.copy(
-                        reRenderFlag = !initialState.reRenderFlag,
-                        isLoading = false,
-                        markerDataList = dummyEmptyList,
-                        dataCreationTimestamp = null,
-                        error = ViewStateError(dummyException)
-                )
-        )
-        testViewModel(initialState, intents, expectedStates)
-    }
-
-    private fun testViewModel(initialState: MapViewState, intents: List<MapIntent>, expectedStates: List<MapViewState>) {
+    private fun test(initialState: MapViewState, intents: List<MapIntent>, expectedStates: List<MapViewState>) {
         val viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance, initialState)
         val testObserver = viewModel.states().test()
 
-        val expectedStatesDistinct = expectedStates.distinctUntilChanged()
-
         viewModel.processIntents(Observable.fromIterable(intents))
 
-        testObserver.assertValueCount(expectedStatesDistinct.size)
+        testObserver.assertValueCount(expectedStates.size)
 
-        expectedStatesDistinct.forEachIndexed {i, expectedState ->
-            assertMapViewState(expectedState, testObserver.values()[i], false)
+        testObserver.values().forEachIndexed {i, tested ->
+            assertMapViewState(expectedStates[i], tested, false)
         }
         testObserver.assertNoErrors()
         testObserver.assertNotComplete()
@@ -264,32 +144,18 @@ class MapViewModelTest {
                 Place("Test place 3", 2001, 15.7, 9.9)
         )
 
-        private val dummyEmptyPlaces = emptyList<Place>()
+        private val dummyData = dummyPlaces.toMarkerDataList()
 
-        private val dummyList = dummyPlaces.toMarkerDataList()
-
-        private val dummyEmptyList = emptyList<MarkerData>()
-
-        private val dummyException = Throwable("dummy error")
+        private val dummyThrowable = Throwable("dummy error")
 
         private val dummyTimestamp = System.currentTimeMillis()
 
         private val initialStates = listOf(
                 MapViewState.default(),
-                MapViewState.default().copy(
-                        isLoading = true
-                ),
-                MapViewState.default().copy(
-                        markerDataList = dummyList,
-                        dataCreationTimestamp = dummyTimestamp
-                ),
-                MapViewState.default().copy(
-                        markerDataList = dummyEmptyList,
-                        dataCreationTimestamp = dummyTimestamp
-                ),
-                MapViewState.default().copy(
-                        error = ViewStateError(dummyException)
-                )
+                MapViewState.default().loading(),
+                MapViewState.default().withData(dummyData, dummyTimestamp),
+                MapViewState.default().withData(emptyList(), dummyTimestamp),
+                MapViewState.default().withError(dummyThrowable)
         )
     }
 }
