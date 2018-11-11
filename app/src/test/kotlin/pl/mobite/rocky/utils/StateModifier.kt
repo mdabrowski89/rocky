@@ -17,7 +17,7 @@ fun <T> createExpectedStates(initialState: T, stateTransformers: List<StateModif
 fun <T> List<T>.distinctUntilChanged(): List<T> {
     val distinctUtilChangedList = mutableListOf<T>()
     forEachIndexed { i, item ->
-        val prevItem = getOrNull(i -1)
+        val prevItem = getOrNull(i - 1)
         if (prevItem == null || prevItem != item) {
             distinctUtilChangedList.add(item)
         }

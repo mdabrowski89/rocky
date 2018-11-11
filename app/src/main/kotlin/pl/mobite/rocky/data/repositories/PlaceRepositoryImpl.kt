@@ -11,6 +11,6 @@ class PlaceRepositoryImpl(
 
     override fun getPlacesFrom1990(query: String): Single<List<Place>> {
         return placeRemoteRepository
-                .fetchAllPlacesFrom1990(query)
+            .fetchAllPlacesFrom1990(query)
     }
 }

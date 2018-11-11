@@ -6,19 +6,19 @@ import pl.mobite.rocky.ui.models.MarkerData
 import pl.mobite.rocky.ui.models.ViewStateError
 
 data class MapViewState(
-        val reRenderFlag: Boolean,
-        val isLoading: Boolean,
-        val markerDataList: List<MarkerData>,
-        val dataCreationTimestamp: Long?,
-        val error: ViewStateError?
-) : Parcelable {
+    val reRenderFlag: Boolean,
+    val isLoading: Boolean,
+    val markerDataList: List<MarkerData>,
+    val dataCreationTimestamp: Long?,
+    val error: ViewStateError?
+): Parcelable {
 
-    constructor(source: Parcel) : this(
-            1 == source.readInt(),
-            1 == source.readInt(),
-            mutableListOf<MarkerData>().apply { source.readTypedList(this, MarkerData.CREATOR) },
-            source.readValue(Long::class.java.classLoader) as Long?,
-            source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader)
+    constructor(source: Parcel): this(
+        1 == source.readInt(),
+        1 == source.readInt(),
+        mutableListOf<MarkerData>().apply { source.readTypedList(this, MarkerData.CREATOR) },
+        source.readValue(Long::class.java.classLoader) as Long?,
+        source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader)
     )
 
     override fun describeContents() = 0
@@ -33,14 +33,15 @@ data class MapViewState(
 
     companion object {
         fun default() = MapViewState(
-                reRenderFlag = false,
-                isLoading = false,
-                markerDataList = emptyList(),
-                dataCreationTimestamp = null,
-                error = null)
+            reRenderFlag = false,
+            isLoading = false,
+            markerDataList = emptyList(),
+            dataCreationTimestamp = null,
+            error = null
+        )
 
         @JvmField
-        val CREATOR: Parcelable.Creator<MapViewState> = object : Parcelable.Creator<MapViewState> {
+        val CREATOR: Parcelable.Creator<MapViewState> = object: Parcelable.Creator<MapViewState> {
             override fun createFromParcel(source: Parcel): MapViewState = MapViewState(source)
             override fun newArray(size: Int): Array<MapViewState?> = arrayOfNulls(size)
         }

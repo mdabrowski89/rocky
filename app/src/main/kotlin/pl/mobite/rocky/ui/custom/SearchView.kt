@@ -15,16 +15,16 @@ import pl.mobite.rocky.utils.setVisibleOrGone
 
 
 class SearchView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+): FrameLayout(context, attrs, defStyleAttr) {
 
     init {
         inflate(R.layout.custom_search_view, true)
 
         clearButton.setOnClickListener { queryInput.setText("") }
-        queryInput.addTextChangedListener(object : CustomTextWatcher() {
+        queryInput.addTextChangedListener(object: CustomTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 clearButton.setVisibleOrGone(queryInput.text.isNotEmpty())
             }
@@ -33,15 +33,16 @@ class SearchView @JvmOverloads constructor(
 
     fun setLoading(isLoading: Boolean) {
         queryInput.isEnabled = !isLoading
-        queryInput.text.toString().let {queryText ->
+        queryInput.text.toString().let { queryText ->
             clearButton.setVisibleOrGone(queryText.isNotEmpty() && !isLoading)
             queryProgress.setVisibleOrGone(queryText.isNotEmpty() && isLoading)
         }
     }
 
-    fun searchEvent() : Observable<String> {
+    fun searchEvent(): Observable<String> {
         return RxTextView.editorActionEvents(queryInput) { action ->
-            action.actionId() == EditorInfo.IME_ACTION_SEARCH && queryInput.text.toString().isNotBlank()}
-                .map { queryInput.text.toString() }
+            action.actionId() == EditorInfo.IME_ACTION_SEARCH && queryInput.text.toString().isNotBlank()
+        }
+            .map { queryInput.text.toString() }
     }
 }

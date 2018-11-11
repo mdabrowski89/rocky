@@ -8,16 +8,16 @@ import pl.mobite.rocky.utils.SchedulerProvider
 
 
 class MapViewModel(
-        placeRepository: PlaceRepository,
-        schedulerProvider: SchedulerProvider,
-        initialState: MapViewState? = null
-) : ViewModel() {
+    placeRepository: PlaceRepository,
+    schedulerProvider: SchedulerProvider,
+    initialState: MapViewState? = null
+): ViewModel() {
 
     private val mapIntentsSource = PublishRelay.create<MapIntent>()
 
     private val mapViewStateSource: Observable<MapViewState> by lazy {
         mapIntentsSource
-                // TODO: pass this objects via constructor + DI
+            // TODO: pass this objects via constructor + DI
             .map(MapIntentInterpreter())
             .compose(MapActionProcessor(placeRepository, schedulerProvider))
             .scan(initialState ?: MapViewState.default(), MapReducer())

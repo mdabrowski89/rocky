@@ -12,8 +12,16 @@ fun assertMarkerDataListEquals(expectedMarkerDataList: List<MarkerData>, testedM
     assertEquals(expectedMarkerDataList.size, testedMakerDataList.size)
     expectedMarkerDataList.forEachIndexed { i, expectedMarkerData ->
         val testedMarkerData = testedMakerDataList[i]
-        assertEquals(expectedMarkerData.markerOptions.position.latitude, testedMarkerData.markerOptions.position.latitude, 0.0)
-        assertEquals(expectedMarkerData.markerOptions.position.longitude, testedMarkerData.markerOptions.position.longitude, 0.0)
+        assertEquals(
+            expectedMarkerData.markerOptions.position.latitude,
+            testedMarkerData.markerOptions.position.latitude,
+            0.0
+        )
+        assertEquals(
+            expectedMarkerData.markerOptions.position.longitude,
+            testedMarkerData.markerOptions.position.longitude,
+            0.0
+        )
         assertEquals(expectedMarkerData.markerOptions.title, testedMarkerData.markerOptions.title)
         assertEquals(expectedMarkerData.description, testedMarkerData.description)
         assertEquals(expectedMarkerData.timeToLive, testedMarkerData.timeToLive)

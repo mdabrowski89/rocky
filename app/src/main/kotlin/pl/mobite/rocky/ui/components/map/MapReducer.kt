@@ -4,17 +4,17 @@ import android.support.annotation.VisibleForTesting
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.functions.BiFunction
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.ui.models.MarkerData
 import pl.mobite.rocky.ui.models.ViewStateError
-import pl.mobite.rocky.data.repositories.models.Place
 
 class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
 
     override fun apply(prevState: MapViewState, result: MapResult): MapViewState {
-        return when(result) {
+        return when (result) {
             is MapResult.ReRenderResult -> prevState.reRender()
             is MapResult.LoadPlacesResult ->
-                when(result) {
+                when (result) {
                     is MapResult.LoadPlacesResult.InFlight ->
                         prevState.loading()
                     is MapResult.LoadPlacesResult.Success ->
@@ -28,29 +28,29 @@ class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
 }
 
 fun MapViewState.reRender() = this.copy(
-        reRenderFlag = !this.reRenderFlag
+    reRenderFlag = !this.reRenderFlag
 )
 
 fun MapViewState.loading() = this.copy(
-        isLoading = true,
-        error = null
+    isLoading = true,
+    error = null
 )
 
 fun MapViewState.withData(markerDataList: List<MarkerData>, dataCreationTimestamp: Long) = this.copy(
-        isLoading = false,
-        error = null,
-        markerDataList = markerDataList,
-        dataCreationTimestamp = dataCreationTimestamp
+    isLoading = false,
+    error = null,
+    markerDataList = markerDataList,
+    dataCreationTimestamp = dataCreationTimestamp
 )
 
 fun MapViewState.withError(throwable: Throwable) = this.copy(
-        isLoading = false,
-        error = ViewStateError(throwable)
+    isLoading = false,
+    error = ViewStateError(throwable)
 )
 
 fun MapViewState.clearData() = this.copy(
-        markerDataList = emptyList(),
-        dataCreationTimestamp = null
+    markerDataList = emptyList(),
+    dataCreationTimestamp = null
 )
 
 @VisibleForTesting

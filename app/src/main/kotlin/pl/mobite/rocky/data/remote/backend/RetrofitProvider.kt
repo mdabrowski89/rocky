@@ -11,17 +11,17 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class RetrofitProvider private constructor(){
+class RetrofitProvider private constructor() {
 
     companion object {
 
         val instance: Retrofit by lazy {
             Retrofit.Builder()
-                    .baseUrl(RockyApp.instance.getString(R.string.music_brainz_backend_url))
-                    .client(createHttpClient())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build()
+                .baseUrl(RockyApp.instance.getString(R.string.music_brainz_backend_url))
+                .client(createHttpClient())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
         }
 
         private fun createHttpClient(): OkHttpClient {
@@ -30,7 +30,7 @@ class RetrofitProvider private constructor(){
             builder.addInterceptor(createHttpLoginInterceptor())
             return builder.build()
         }
-    
+
         private fun createHttpLoginInterceptor(): Interceptor {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = if (BuildConfig.DEBUG) {
@@ -40,7 +40,7 @@ class RetrofitProvider private constructor(){
             }
             return interceptor
         }
-        
+
         private fun addUserAgentInterceptor() = Interceptor { chain ->
             val original = chain.request()
             val request = original.newBuilder()

@@ -28,12 +28,14 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Success() {
-        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(
-            dummyPlaceApiList
-        ))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(
+            Single.just(
+                dummyPlaceApiList
+            )
+        )
 
         repository.getPlacesFrom1990(dummyQuery)
-                .subscribe(testObserver)
+            .subscribe(testObserver)
 
         testObserver.assertValue(dummyPlaceListExpected)
         testObserver.assertNoErrors()
@@ -45,7 +47,7 @@ class PlaceRepositoryImplTest {
         `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
         repository.getPlacesFrom1990(dummyQuery)
-                .subscribe(testObserver)
+            .subscribe(testObserver)
 
         testObserver.assertValue(emptyList())
         testObserver.assertNoErrors()
@@ -54,12 +56,14 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Failure() {
-        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.error(
-            dummyException
-        ))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(
+            Single.error(
+                dummyException
+            )
+        )
 
         repository.getPlacesFrom1990(dummyQuery)
-                .subscribe(testObserver)
+            .subscribe(testObserver)
 
         testObserver.assertError(dummyException)
         testObserver.assertNotComplete()
@@ -77,9 +81,12 @@ class PlaceRepositoryImplTest {
         private val dummyPlaceApiInvalid2 = createSamplePlaceAPI("Sample name 1", "14.2", "-12.3", null)
         private val dummyPlaceApiInvalid3 = createSamplePlaceAPI("Sample name 2", null, "-12.3", "1993")
         private val dummyPlaceApiInvalid4 = createSamplePlaceAPI("Sample name 3", "14.2", null, "1993")
-        private val dummyPlaceApiInvalid5 = createSamplePlaceAPI("Sample name 4",
-            CoordinatesBackendResponse("14.2", "-12.3"), null)
-        private val dummyPlaceApiInvalid6 = createSamplePlaceAPI("Sample name 5", null,
+        private val dummyPlaceApiInvalid5 = createSamplePlaceAPI(
+            "Sample name 4",
+            CoordinatesBackendResponse("14.2", "-12.3"), null
+        )
+        private val dummyPlaceApiInvalid6 = createSamplePlaceAPI(
+            "Sample name 5", null,
             LifeSpanBackendResponse("1993", null, null)
         )
 

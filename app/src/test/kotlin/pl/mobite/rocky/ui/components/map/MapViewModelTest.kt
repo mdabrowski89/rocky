@@ -17,10 +17,10 @@ class MapViewModelTest {
     @Test
     fun testMapReadyIntent() {
         val intents = listOf(
-                MapReadyIntent
+            MapReadyIntent
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                MapViewState::reRender
+            MapViewState::reRender
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -31,11 +31,11 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
         val intents = listOf(
-                SearchPlacesIntent(dummyQuery)
+            SearchPlacesIntent(dummyQuery)
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                { state -> state.loading() },
-                { state -> state.withData(dummyData, dummyTimestamp) }
+            { state -> state.loading() },
+            { state -> state.withData(dummyData, dummyTimestamp) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -46,13 +46,13 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
 
         val intents = listOf(
-                SearchPlacesIntent(dummyQuery),
-                AllMarkersGoneIntent
+            SearchPlacesIntent(dummyQuery),
+            AllMarkersGoneIntent
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                { state -> state.loading() },
-                { state -> state.withData(dummyData, dummyTimestamp) },
-                { state -> state.clearData() }
+            { state -> state.loading() },
+            { state -> state.withData(dummyData, dummyTimestamp) },
+            { state -> state.clearData() }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -63,11 +63,11 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
         val intents = listOf(
-                SearchPlacesIntent(dummyQuery)
+            SearchPlacesIntent(dummyQuery)
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                { state -> state.loading() },
-                { state -> state.withData(emptyList(), dummyTimestamp) }
+            { state -> state.loading() },
+            { state -> state.withData(emptyList(), dummyTimestamp) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -78,11 +78,11 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyThrowable))
 
         val intents = listOf(
-                SearchPlacesIntent(dummyQuery)
+            SearchPlacesIntent(dummyQuery)
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                { state -> state.loading() },
-                { state -> state.withError(dummyThrowable) }
+            { state -> state.loading() },
+            { state -> state.withError(dummyThrowable) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -101,27 +101,28 @@ class MapViewModelTest {
         `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenReturn(Single.error(dummyThrowable))
 
         val intents = listOf(
-                MapReadyIntent,
-                SearchPlacesIntent(dummyQuery),
-                SearchPlacesIntent(dummyQuery2),
-                AllMarkersGoneIntent
+            MapReadyIntent,
+            SearchPlacesIntent(dummyQuery),
+            SearchPlacesIntent(dummyQuery2),
+            AllMarkersGoneIntent
         )
         val stateTransformers = listOf<MapViewStateModifier>(
-                { state -> state.reRender() },
-                { state -> state.loading() },
-                { state -> state.withData(dummyData, dummyTimestamp) },
-                { state -> state.loading() },
-                { state -> state.withError(dummyThrowable) },
-                { state -> state.clearData() }
+            { state -> state.reRender() },
+            { state -> state.loading() },
+            { state -> state.withData(dummyData, dummyTimestamp) },
+            { state -> state.loading() },
+            { state -> state.withError(dummyThrowable) },
+            { state -> state.clearData() }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
     }
 
-    private fun test(intents: List<MapIntent>, stateTransformers: List<StateModifier<MapViewState>>) = { initialState: MapViewState ->
-        val expectedStates = createExpectedStates(initialState, stateTransformers)
-        test(initialState, intents, expectedStates)
-    }
+    private fun test(intents: List<MapIntent>, stateTransformers: List<StateModifier<MapViewState>>) =
+        { initialState: MapViewState ->
+            val expectedStates = createExpectedStates(initialState, stateTransformers)
+            test(initialState, intents, expectedStates)
+        }
 
     private fun test(initialState: MapViewState, intents: List<MapIntent>, expectedStates: List<MapViewState>) {
         val viewModel = MapViewModel(placeRepositoryMock, ImmediateSchedulerProvider.instance, initialState)
@@ -131,7 +132,7 @@ class MapViewModelTest {
 
         testObserver.assertValueCount(expectedStates.size)
 
-        testObserver.values().forEachIndexed {i, tested ->
+        testObserver.values().forEachIndexed { i, tested ->
             assertMapViewState(expectedStates[i], tested, false)
         }
         testObserver.assertNoErrors()
@@ -144,9 +145,9 @@ class MapViewModelTest {
         private const val dummyQuery2 = "query2"
 
         private val dummyPlaces = listOf(
-                Place("Test place 1", 1995, 12.4, 15.3),
-                Place("Test place 2", 2000, -10.1, 18.1),
-                Place("Test place 3", 2001, 15.7, 9.9)
+            Place("Test place 1", 1995, 12.4, 15.3),
+            Place("Test place 2", 2000, -10.1, 18.1),
+            Place("Test place 3", 2001, 15.7, 9.9)
         )
 
         private val dummyData = dummyPlaces.toMarkerDataList()
@@ -156,11 +157,11 @@ class MapViewModelTest {
         private val dummyTimestamp = System.currentTimeMillis()
 
         private val initialStates = listOf(
-                MapViewState.default(),
-                MapViewState.default().loading(),
-                MapViewState.default().withData(dummyData, dummyTimestamp),
-                MapViewState.default().withData(emptyList(), dummyTimestamp),
-                MapViewState.default().withError(dummyThrowable)
+            MapViewState.default(),
+            MapViewState.default().loading(),
+            MapViewState.default().withData(dummyData, dummyTimestamp),
+            MapViewState.default().withData(emptyList(), dummyTimestamp),
+            MapViewState.default().withError(dummyThrowable)
         )
     }
 }

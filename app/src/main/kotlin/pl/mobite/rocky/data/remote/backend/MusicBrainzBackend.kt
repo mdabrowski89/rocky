@@ -10,8 +10,8 @@ interface MusicBrainzBackend {
 
     @GET("place/?fmt=json")
     fun getPlaces(
-            @Query("query") query: String,
-            @Query("offset") offset: Int,
-            @Query("limit") limit: Int
+        @Query("query") query: String,
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int
     ): Single<PlacesBackendResponse>
 }

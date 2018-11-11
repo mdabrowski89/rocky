@@ -7,11 +7,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 /**
  * @param timeToLive in milliseconds
  */
-data class MarkerData(val markerOptions: MarkerOptions, val description: String, val timeToLive: Long) : Parcelable {
-    constructor(source: Parcel) : this(
-            source.readParcelable(MarkerOptions::class.java.classLoader)!!,
-            source.readString()!!,
-            source.readLong()
+data class MarkerData(val markerOptions: MarkerOptions, val description: String, val timeToLive: Long): Parcelable {
+    constructor(source: Parcel): this(
+        source.readParcelable(MarkerOptions::class.java.classLoader)!!,
+        source.readString()!!,
+        source.readLong()
     )
 
     override fun describeContents() = 0
@@ -24,9 +24,10 @@ data class MarkerData(val markerOptions: MarkerOptions, val description: String,
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<MarkerData> = object : Parcelable.Creator<MarkerData> {
+        val CREATOR: Parcelable.Creator<MarkerData> = object: Parcelable.Creator<MarkerData> {
             override fun createFromParcel(source: Parcel): MarkerData =
                 MarkerData(source)
+
             override fun newArray(size: Int): Array<MarkerData?> = arrayOfNulls(size)
         }
     }

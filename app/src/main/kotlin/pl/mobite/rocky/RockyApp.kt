@@ -13,7 +13,8 @@ open class RockyApp: Application() {
 
     companion object {
 
-        @JvmStatic lateinit var instance: RockyApp
+        @JvmStatic
+        lateinit var instance: RockyApp
             private set
     }
 }

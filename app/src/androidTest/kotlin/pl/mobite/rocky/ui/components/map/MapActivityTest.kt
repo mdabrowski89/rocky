@@ -30,17 +30,17 @@ class MapActivityTest {
     fun testLoadingData() {
         /* perform query with results */
         onView(withId(R.id.queryInput))
-                .perform(typeText("germany"), pressImeActionButton())
+            .perform(typeText("germany"), pressImeActionButton())
 
         /* verify toast with empty list message is not displayed */
         onView(withText(R.string.map_api_empty_list)).check(doesNotExist())
 
         /* perform query with no results */
         onView(withId(R.id.queryInput))
-                .perform(replaceText("asd"), pressImeActionButton())
+            .perform(replaceText("asd"), pressImeActionButton())
 
         /* verify toast with empty list message is displayed */
         onView(withText(R.string.map_api_empty_list))
-                .inRoot(withDecorView(not(`is`(mActivityRule.activity.window.decorView)))).check(matches(isDisplayed()))
+            .inRoot(withDecorView(not(`is`(mActivityRule.activity.window.decorView)))).check(matches(isDisplayed()))
     }
 }

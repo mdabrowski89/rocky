@@ -36,12 +36,18 @@ class PlaceRemoteRepositoryImplTest {
         val placeApiResponseList = createDummyPlaceApiResponseList(count, pageLimit)
         val placeListExpected = placeApiResponseList.getAllPlaceApiAsList()
         placeApiResponseList.forEachIndexed { i, list ->
-            `when`(musicBrainzBackendMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
-                    .thenReturn(Single.just(list))
+            `when`(
+                musicBrainzBackendMock.getPlaces(
+                    dummyQuery.withYearFilter(),
+                    getPageOffset(i, pageLimit),
+                    pageLimit
+                )
+            )
+                .thenReturn(Single.just(list))
         }
 
         remoteRepository.fetchAllPlacesFrom1990(dummyQuery)
-                .subscribe(testObserver)
+            .subscribe(testObserver)
 
         testObserver.assertValueCount(1)
         testObserver.assertValueAt(0, placeListExpected)
@@ -55,8 +61,14 @@ class PlaceRemoteRepositoryImplTest {
         val placeApiResponseList = createDummyPlaceApiResponseList(count, pageLimit)
         val placeApiListExpected = placeApiResponseList.getAllPlaceApiAsList()
         placeApiResponseList.forEachIndexed { i, list ->
-            `when`(musicBrainzBackendMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
-                    .thenReturn(Single.just(list))
+            `when`(
+                musicBrainzBackendMock.getPlaces(
+                    dummyQuery.withYearFilter(),
+                    getPageOffset(i, pageLimit),
+                    pageLimit
+                )
+            )
+                .thenReturn(Single.just(list))
         }
 
         /* I need to use blockingGet because testObserver wont work */
@@ -68,10 +80,10 @@ class PlaceRemoteRepositoryImplTest {
     @Test
     fun testOnePageQueryError() {
         `when`(musicBrainzBackendMock.getPlaces(dummyQuery.withYearFilter(), 0, pageLimit))
-                .thenReturn(Single.error(dummyException))
+            .thenReturn(Single.error(dummyException))
 
         remoteRepository.fetchAllPlacesFrom1990(dummyQuery)
-                .subscribe(testObserver)
+            .subscribe(testObserver)
 
         testObserver.assertNotComplete()
         testObserver.assertError(dummyException)
@@ -89,8 +101,14 @@ class PlaceRemoteRepositoryImplTest {
                 /* throw error in last request */
                 Single.error(dummyException)
             }
-            `when`(musicBrainzBackendMock.getPlaces(dummyQuery.withYearFilter(), getPageOffset(i, pageLimit), pageLimit))
-                    .thenReturn(single)
+            `when`(
+                musicBrainzBackendMock.getPlaces(
+                    dummyQuery.withYearFilter(),
+                    getPageOffset(i, pageLimit),
+                    pageLimit
+                )
+            )
+                .thenReturn(single)
         }
 
         /* I need to use blockingGet because testObserver wont work,

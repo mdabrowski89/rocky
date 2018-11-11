@@ -11,10 +11,10 @@ import pl.mobite.rocky.ui.components.map.MapViewState
 import pl.mobite.rocky.utils.AndroidSchedulerProvider
 
 
-class ViewModelFactory private constructor(private val args: Array<out Any?>) : ViewModelProvider.Factory {
+class ViewModelFactory private constructor(private val args: Array<out Any?>): ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T: ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass == MapViewModel::class.java) {
             val musicBrainzServiceProvider = { RetrofitProvider.instance.create(MusicBrainzBackend::class.java) }
             return MapViewModel(
@@ -23,7 +23,8 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>) : 
                         musicBrainzServiceProvider
                     )
                 ), AndroidSchedulerProvider.instance,
-                    args[0] as MapViewState?) as T
+                args[0] as MapViewState?
+            ) as T
         }
         throw IllegalStateException("Unknown view model class")
     }

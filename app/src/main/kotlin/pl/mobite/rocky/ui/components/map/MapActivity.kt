@@ -12,13 +12,13 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
-import pl.mobite.rocky.ui.models.MarkerData
-import pl.mobite.rocky.ui.components.map.MapIntent.*
 import pl.mobite.rocky.ViewModelFactory
+import pl.mobite.rocky.ui.components.map.MapIntent.*
+import pl.mobite.rocky.ui.models.MarkerData
 import pl.mobite.rocky.utils.dpToPx
 
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapActivity: AppCompatActivity(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
 
@@ -44,9 +44,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         In order to prevent it the last ViewState is saved in activity bundle and it is used
         as initial state when new ViewModel is created  */
         val initialViewState: MapViewState? = savedInstanceState?.getParcelable(MapViewState.PARCEL_KEY)
-        viewModel = ViewModelProviders.of(this,
-                ViewModelFactory.getInstance(initialViewState))
-                .get(MapViewModel::class.java)
+        viewModel = ViewModelProviders
+            .of(this, ViewModelFactory.getInstance(initialViewState))
+            .get(MapViewModel::class.java)
     }
 
     override fun onStart() {
@@ -55,7 +55,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         disposable.add(viewModel.states().subscribe(this::render))
         viewModel.processIntents(intents())
 
-        disposable.addAll(markerClickedRelay.subscribe { description -> showMarkerDescription(description)})
+        disposable.addAll(markerClickedRelay.subscribe { description -> showMarkerDescription(description) })
     }
 
     override fun onStop() {
@@ -72,10 +72,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun intents(): Observable<MapIntent> {
-        return Observable.merge(listOf(
-                mapReadyRelay,
-                searchIntent(),
-                allMarkersGoneRelay))
+        return Observable.merge(
+            listOf(
+                mapReadyRelay, searchIntent(), allMarkersGoneRelay
+            )
+        )
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -101,9 +102,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchIntent(): Observable<SearchPlacesIntent> {
-        return searchView
-                .searchEvent()
-                .map { query -> SearchPlacesIntent(query) }
+        return searchView.searchEvent().map { query -> SearchPlacesIntent(query) }
     }
 
     private fun render(state: MapViewState) {
@@ -113,7 +112,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             searchView.setLoading(googleMap == null || isLoading)
 
             /* Handle error - display message and marked is as displayed */
-            if (error != null && error.shouldDisplay.getAndSet(false)) {
+            if (error?.shouldBeDisplayed() == true) {
                 showErrorMessage()
                 return
             }
@@ -172,12 +171,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         map.clear()
     }
 
-    private fun getMarkersToDisplay(markerDataList: List<MarkerData>, dataCreationTimestamp: Long): List<MarkerToDisplay> {
+    private fun getMarkersToDisplay(
+        markerDataList: List<MarkerData>,
+        dataCreationTimestamp: Long
+    ): List<MarkerToDisplay> {
         /* Calculate how much time markers are already displayed on the map */
         val passedTime = System.currentTimeMillis() - dataCreationTimestamp
         return markerDataList
-                .map { markerData -> MarkerToDisplay(markerData, markerData.timeToLive - passedTime) }
-                .filter { markerToDisplay -> markerToDisplay.remainingTime > 0 }
+            .map { markerData -> MarkerToDisplay(markerData, markerData.timeToLive - passedTime) }
+            .filter { markerToDisplay -> markerToDisplay.remainingTime > 0 }
     }
 
     private fun displayMarkerOnMap(map: GoogleMap, markerToDisplay: MarkerToDisplay) {
