@@ -62,6 +62,7 @@ dependencies {
     implementation Dependencies.retrofitLib
     implementation Dependencies.retrofitGsonConverterLib
     implementation Dependencies.retrofitRxJava2AdapterLib
+    implementation Dependencies.retrofitLoggingInterceptorLib
 
     testImplementation Dependencies.junitLib
     testImplementation Dependencies.mockitoLib

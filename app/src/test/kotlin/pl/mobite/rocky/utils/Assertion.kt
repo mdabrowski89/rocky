@@ -1,7 +1,7 @@
 package pl.mobite.rocky.utils
 
 import org.junit.Assert.*
-import pl.mobite.rocky.data.model.MarkerData
+import pl.mobite.rocky.ui.models.MarkerData
 import pl.mobite.rocky.ui.components.map.MapViewState
 
 

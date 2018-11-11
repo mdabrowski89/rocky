@@ -1,34 +1,36 @@
-package pl.mobite.rocky.data.repositories.place
+package pl.mobite.rocky.data.repositories
 
 import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.models.Place
-import pl.mobite.rocky.data.remote.models.CoordinatesApi
-import pl.mobite.rocky.data.remote.models.LifeSpanApi
-import pl.mobite.rocky.data.remote.services.PlaceApiService
+import pl.mobite.rocky.data.repositories.models.Place
+import pl.mobite.rocky.data.remote.backend.responses.CoordinatesBackendResponse
+import pl.mobite.rocky.data.remote.backend.responses.LifeSpanBackendResponse
+import pl.mobite.rocky.data.remote.repository.PlaceRemoteRepository
 import pl.mobite.rocky.utils.createSamplePlaceAPI
 import pl.mobite.rocky.utils.lazyMock
 
 
 class PlaceRepositoryImplTest {
 
-    private val placeApiServiceMock: PlaceApiService by lazyMock()
+    private val placeRemoteRepositoryMock: PlaceRemoteRepository by lazyMock()
 
     private lateinit var repository: PlaceRepositoryImpl
     private lateinit var testObserver: TestObserver<List<Place>>
 
     @Before
     fun setUp() {
-        repository = PlaceRepositoryImpl(placeApiServiceMock)
+        repository = PlaceRepositoryImpl(placeRemoteRepositoryMock)
         testObserver = TestObserver()
     }
 
     @Test
     fun testGetPlacesFrom1990Success() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaceApiList))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(
+            dummyPlaceApiList
+        ))
 
         repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
@@ -40,7 +42,7 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990SuccessButEmptyList() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
 
         repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
@@ -52,7 +54,9 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Failure() {
-        `when`(placeApiServiceMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyException))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.error(
+            dummyException
+        ))
 
         repository.getPlacesFrom1990(dummyQuery)
                 .subscribe(testObserver)
@@ -73,11 +77,21 @@ class PlaceRepositoryImplTest {
         private val dummyPlaceApiInvalid2 = createSamplePlaceAPI("Sample name 1", "14.2", "-12.3", null)
         private val dummyPlaceApiInvalid3 = createSamplePlaceAPI("Sample name 2", null, "-12.3", "1993")
         private val dummyPlaceApiInvalid4 = createSamplePlaceAPI("Sample name 3", "14.2", null, "1993")
-        private val dummyPlaceApiInvalid5 = createSamplePlaceAPI("Sample name 4", CoordinatesApi("14.2", "-12.3"), null)
-        private val dummyPlaceApiInvalid6 = createSamplePlaceAPI("Sample name 5", null, LifeSpanApi("1993", null, null))
+        private val dummyPlaceApiInvalid5 = createSamplePlaceAPI("Sample name 4",
+            CoordinatesBackendResponse("14.2", "-12.3"), null)
+        private val dummyPlaceApiInvalid6 = createSamplePlaceAPI("Sample name 5", null,
+            LifeSpanBackendResponse("1993", null, null)
+        )
 
-        private val dummyPlaceApiList = listOf(dummyPlaceApiInvalid1, dummyPlaceApiInvalid2, dummyPlaceApi,
-                dummyPlaceApiInvalid3, dummyPlaceApiInvalid4, dummyPlaceApiInvalid5, dummyPlaceApiInvalid6)
+        private val dummyPlaceApiList = listOf(
+            dummyPlaceApiInvalid1,
+            dummyPlaceApiInvalid2,
+            dummyPlaceApi,
+            dummyPlaceApiInvalid3,
+            dummyPlaceApiInvalid4,
+            dummyPlaceApiInvalid5,
+            dummyPlaceApiInvalid6
+        )
         private val dummyPlaceListExpected = listOf(dummyPlaceExpected)
     }
 }

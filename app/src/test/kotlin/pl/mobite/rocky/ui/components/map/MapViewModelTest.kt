@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapIntent.*
 import pl.mobite.rocky.utils.*

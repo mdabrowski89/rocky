@@ -5,7 +5,7 @@ import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapAction.*
 import pl.mobite.rocky.ui.components.map.MapResult.ClearSearchResultsResult

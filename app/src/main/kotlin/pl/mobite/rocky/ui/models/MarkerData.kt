@@ -1,4 +1,4 @@
-package pl.mobite.rocky.data.model
+package pl.mobite.rocky.ui.models
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -25,7 +25,8 @@ data class MarkerData(val markerOptions: MarkerOptions, val description: String,
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<MarkerData> = object : Parcelable.Creator<MarkerData> {
-            override fun createFromParcel(source: Parcel): MarkerData = MarkerData(source)
+            override fun createFromParcel(source: Parcel): MarkerData =
+                MarkerData(source)
             override fun newArray(size: Int): Array<MarkerData?> = arrayOfNulls(size)
         }
     }

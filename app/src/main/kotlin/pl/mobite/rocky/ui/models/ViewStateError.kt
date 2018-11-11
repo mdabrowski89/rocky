@@ -1,4 +1,4 @@
-package pl.mobite.rocky.data.model
+package pl.mobite.rocky.ui.models
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -22,7 +22,8 @@ data class ViewStateError(val throwable: Throwable, val shouldDisplay: AtomicBoo
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<ViewStateError> = object : Parcelable.Creator<ViewStateError> {
-            override fun createFromParcel(source: Parcel): ViewStateError = ViewStateError(source)
+            override fun createFromParcel(source: Parcel): ViewStateError =
+                ViewStateError(source)
             override fun newArray(size: Int): Array<ViewStateError?> = arrayOfNulls(size)
         }
     }

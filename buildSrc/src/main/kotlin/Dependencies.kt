@@ -17,6 +17,7 @@ object Versions {
     const val rxIdler = "0.9.0"
 
     const val retrofit = "2.4.0"
+    const val retrofitLoggingInterceptor = "3.9.1"
 
     // test
     const val junit = "4.12"
@@ -44,6 +45,7 @@ object Dependencies {
     const val retrofitLib = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitGsonConverterLib = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofitRxJava2AdapterLib = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
+    const val retrofitLoggingInterceptorLib = "com.squareup.okhttp3:logging-interceptor:${Versions.retrofitLoggingInterceptor}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

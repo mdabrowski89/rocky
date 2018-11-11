@@ -1,6 +1,6 @@
 package pl.mobite.rocky.ui.components.map
 
-import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.data.repositories.models.Place
 
 
 sealed class MapResult {

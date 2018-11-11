@@ -4,9 +4,9 @@ import android.support.annotation.VisibleForTesting
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.functions.BiFunction
-import pl.mobite.rocky.data.model.MarkerData
-import pl.mobite.rocky.data.model.ViewStateError
-import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.ui.models.MarkerData
+import pl.mobite.rocky.ui.models.ViewStateError
+import pl.mobite.rocky.data.repositories.models.Place
 
 class MapReducer: BiFunction<MapViewState, MapResult, MapViewState> {
 

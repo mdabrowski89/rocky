@@ -2,8 +2,8 @@ package pl.mobite.rocky.ui.components.map
 
 import android.os.Parcel
 import android.os.Parcelable
-import pl.mobite.rocky.data.model.MarkerData
-import pl.mobite.rocky.data.model.ViewStateError
+import pl.mobite.rocky.ui.models.MarkerData
+import pl.mobite.rocky.ui.models.ViewStateError
 
 data class MapViewState(
         val reRenderFlag: Boolean,

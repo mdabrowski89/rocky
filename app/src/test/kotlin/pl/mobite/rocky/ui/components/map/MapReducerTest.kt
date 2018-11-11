@@ -2,7 +2,7 @@ package pl.mobite.rocky.ui.components.map
 
 import org.junit.Before
 import org.junit.Test
-import pl.mobite.rocky.data.models.Place
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.ui.components.map.MapResult.*
 import pl.mobite.rocky.utils.MapViewStateModifier
 import pl.mobite.rocky.utils.assertMapViewState

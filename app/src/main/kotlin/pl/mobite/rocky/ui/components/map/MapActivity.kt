@@ -12,9 +12,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.mobite.rocky.R
-import pl.mobite.rocky.data.model.MarkerData
+import pl.mobite.rocky.ui.models.MarkerData
 import pl.mobite.rocky.ui.components.map.MapIntent.*
-import pl.mobite.rocky.utils.RockyViewModelFactory
+import pl.mobite.rocky.ViewModelFactory
 import pl.mobite.rocky.utils.dpToPx
 
 
@@ -45,7 +45,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         as initial state when new ViewModel is created  */
         val initialViewState: MapViewState? = savedInstanceState?.getParcelable(MapViewState.PARCEL_KEY)
         viewModel = ViewModelProviders.of(this,
-                RockyViewModelFactory.getInstance(initialViewState))
+                ViewModelFactory.getInstance(initialViewState))
                 .get(MapViewModel::class.java)
     }
 
