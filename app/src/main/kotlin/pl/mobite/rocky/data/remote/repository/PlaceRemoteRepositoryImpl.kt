@@ -44,18 +44,6 @@ class PlaceRemoteRepositoryImpl(
         return places.mapNotNull { it.toPlace() }
     }
 
-    private fun PlaceBackendResponse.toPlace(): Place? {
-        val name = name
-        val openYear = lifeSpan?.begin?.toIntOrNull()
-        val lat = coordinatesResponse?.latitude?.toDoubleOrNull()
-        val lng = coordinatesResponse?.longitude?.toDoubleOrNull()
-
-        return if (name != null && openYear != null && lat != null && lng != null) {
-            Place(name, openYear, lat, lng)
-        } else {
-            null
-        }
-    }
     private fun String.withYearFilter() = "$this AND begin:[1990 TO 2200]"
 
     private data class PlacesBackendRequest(val offset: Int, val placesBackendResponse: PlacesBackendResponse? = null)

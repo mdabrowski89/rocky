@@ -1,6 +1,7 @@
 package pl.mobite.rocky
 
 import android.app.Application
+import io.reactivex.plugins.RxJavaPlugins
 
 
 open class RockyApp: Application() {
@@ -9,6 +10,16 @@ open class RockyApp: Application() {
         super.onCreate()
 
         instance = this
+
+        initRxJavaErrorHandler()
+    }
+
+    private fun initRxJavaErrorHandler() {
+        RxJavaPlugins.setErrorHandler { t: Throwable? ->
+            if (t is InterruptedException) {
+                // fine, some blocking code was interrupted by a dispose call
+            }
+        }
     }
 
     companion object {

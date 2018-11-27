@@ -1,11 +1,10 @@
 package pl.mobite.rocky.ui.components.map
 
 import io.reactivex.Observable
-import io.reactivex.Single
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.data.repositories.PlaceRepository
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.ui.components.map.MapIntent.*
 import pl.mobite.rocky.utils.*
 
@@ -28,7 +27,7 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentSuccess() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(dummyPlaces)
 
         val intents = listOf(
             SearchPlacesIntent(dummyQuery)
@@ -43,7 +42,7 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentSuccessAndAllMarkersGone() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(dummyPlaces)
 
         val intents = listOf(
             SearchPlacesIntent(dummyQuery),
@@ -60,7 +59,7 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentSuccessButEmptyList() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(emptyList())
 
         val intents = listOf(
             SearchPlacesIntent(dummyQuery)
@@ -75,7 +74,7 @@ class MapViewModelTest {
 
     @Test
     fun testSearchPlacesIntentFailure() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.error(dummyThrowable))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenThrow(dummyThrowable)
 
         val intents = listOf(
             SearchPlacesIntent(dummyQuery)
@@ -97,8 +96,8 @@ class MapViewModelTest {
     * 6. error message disappear */
     @Test
     fun testUsageScenario() {
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(Single.just(dummyPlaces))
-        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenReturn(Single.error(dummyThrowable))
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery)).thenReturn(dummyPlaces)
+        `when`(placeRepositoryMock.getPlacesFrom1990(dummyQuery2)).thenThrow(dummyThrowable)
 
         val intents = listOf(
             MapReadyIntent,

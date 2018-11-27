@@ -7,6 +7,7 @@ import retrofit2.http.Query
 
 interface MusicBrainzBackend {
 
+    @Throws(Throwable::class)
     @GET("place/?fmt=json")
     fun getPlaces(
         @Query("query") query: String,

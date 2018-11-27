@@ -5,14 +5,19 @@ import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import pl.mobite.rocky.data.repositories.PlaceRepository
 import pl.mobite.rocky.ui.components.map.MapAction.*
-import pl.mobite.rocky.ui.components.map.MapResult.*
+import pl.mobite.rocky.ui.components.map.processors.ClearSearchResultsProcessor
+import pl.mobite.rocky.ui.components.map.processors.LoadPlacesProcessor
+import pl.mobite.rocky.ui.components.map.processors.ReRenderProcessor
 import pl.mobite.rocky.utils.SchedulerProvider
-import pl.mobite.rocky.utils.SimpleActionProcessor
 
 class MapActionProcessor(
-    private val placeRepository: PlaceRepository,
-    private val schedulerProvider: SchedulerProvider
+    placeRepository: PlaceRepository,
+    schedulerProvider: SchedulerProvider
 ): ObservableTransformer<MapAction, MapResult> {
+
+    private val reRenderProcessor = ReRenderProcessor()
+    private val loadPlacesProcessor = LoadPlacesProcessor(placeRepository, schedulerProvider)
+    private val clearSearchResultsProcessor = ClearSearchResultsProcessor()
 
     override fun apply(actions: Observable<MapAction>): ObservableSource<MapResult> {
         return actions.publish { shared ->
@@ -25,25 +30,4 @@ class MapActionProcessor(
             )
         }
     }
-
-    private val loadPlacesProcessor = ObservableTransformer { actions: Observable<LoadPlacesAction> ->
-        actions.switchMap { action ->
-            Observable
-                .fromCallable {
-                    placeRepository.getPlacesFrom1990(action.query)
-                }
-                .map { places -> LoadPlacesResult.Success(places, System.currentTimeMillis()) }
-                .cast(LoadPlacesResult::class.java)
-                .onErrorReturn { t -> LoadPlacesResult.Failure(t) }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .startWith(LoadPlacesResult.InFlight)
-        }
-    }
-
-    private val reRenderProcessor = SimpleActionProcessor<ReRenderAction, ReRenderResult>(ReRenderResult)
-
-    private val clearSearchResultsProcessor =
-        SimpleActionProcessor<ClearSearchResultsAction, ClearSearchResultsResult>(ClearSearchResultsResult)
-
 }

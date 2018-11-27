@@ -1,14 +1,15 @@
 package pl.mobite.rocky.data.repositories
 
-import io.reactivex.Single
 import io.reactivex.observers.TestObserver
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.data.remote.backend.responses.CoordinatesBackendResponse
 import pl.mobite.rocky.data.remote.backend.responses.LifeSpanBackendResponse
 import pl.mobite.rocky.data.remote.repository.PlaceRemoteRepository
+import pl.mobite.rocky.data.remote.repository.toPlace
+import pl.mobite.rocky.data.repositories.models.Place
 import pl.mobite.rocky.utils.createSamplePlaceAPI
 import pl.mobite.rocky.utils.lazyMock
 
@@ -28,45 +29,32 @@ class PlaceRepositoryImplTest {
 
     @Test
     fun testGetPlacesFrom1990Success() {
-        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(
-            Single.just(
-                dummyPlaceApiList
-            )
-        )
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(dummyPlace)
 
-        repository.getPlacesFrom1990(dummyQuery)
-            .subscribe(testObserver)
+        val places = repository.getPlacesFrom1990(dummyQuery)
 
-        testObserver.assertValue(dummyPlaceListExpected)
-        testObserver.assertNoErrors()
-        testObserver.assertComplete()
+        assertTrue(places == dummyPlaceListExpected)
     }
 
     @Test
     fun testGetPlacesFrom1990SuccessButEmptyList() {
-        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(Single.just(emptyList()))
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(emptyList())
 
-        repository.getPlacesFrom1990(dummyQuery)
-            .subscribe(testObserver)
+        val places = repository.getPlacesFrom1990(dummyQuery)
 
-        testObserver.assertValue(emptyList())
-        testObserver.assertNoErrors()
-        testObserver.assertComplete()
+        assertTrue(places.isEmpty())
     }
 
     @Test
     fun testGetPlacesFrom1990Failure() {
-        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenReturn(
-            Single.error(
-                dummyException
-            )
-        )
+        `when`(placeRemoteRepositoryMock.fetchAllPlacesFrom1990(dummyQuery)).thenThrow(dummyException)
 
-        repository.getPlacesFrom1990(dummyQuery)
-            .subscribe(testObserver)
-
-        testObserver.assertError(dummyException)
-        testObserver.assertNotComplete()
+        try {
+            repository.getPlacesFrom1990(dummyQuery)
+            assertTrue("dummy exception should be thrown", false)
+        } catch (e: Throwable) {
+            assertTrue(e == dummyException)
+        }
     }
 
     companion object {
@@ -90,7 +78,7 @@ class PlaceRepositoryImplTest {
             LifeSpanBackendResponse("1993", null, null)
         )
 
-        private val dummyPlaceApiList = listOf(
+        private val dummyPlace = listOf(
             dummyPlaceApiInvalid1,
             dummyPlaceApiInvalid2,
             dummyPlaceApi,
@@ -98,7 +86,8 @@ class PlaceRepositoryImplTest {
             dummyPlaceApiInvalid4,
             dummyPlaceApiInvalid5,
             dummyPlaceApiInvalid6
-        )
+        ).mapNotNull { it.toPlace() }
+
         private val dummyPlaceListExpected = listOf(dummyPlaceExpected)
     }
 }
