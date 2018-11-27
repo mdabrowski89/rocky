@@ -16,15 +16,13 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>): V
     @Suppress("UNCHECKED_CAST")
     override fun <T: ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass == MapViewModel::class.java) {
-            val musicBrainzServiceProvider = { RetrofitProvider.instance.create(MusicBrainzBackend::class.java) }
-            return MapViewModel(
-                PlaceRepositoryImpl(
-                    PlaceRemoteRepositoryImpl(
-                        musicBrainzServiceProvider
-                    )
-                ), AndroidSchedulerProvider.instance,
-                args[0] as MapViewState?
-            ) as T
+
+            // TODO: pass this objects via DI
+            val musicBrainzBackend by lazy { RetrofitProvider.instance.create(MusicBrainzBackend::class.java) }
+            val placeRemoteRepo by lazy { PlaceRemoteRepositoryImpl(musicBrainzBackend) }
+            val placeRepo by lazy { PlaceRepositoryImpl(placeRemoteRepo) }
+
+            return MapViewModel(placeRepo, AndroidSchedulerProvider.instance, args[0] as MapViewState?) as T
         }
         throw IllegalStateException("Unknown view model class")
     }

@@ -1,10 +1,11 @@
 object Versions {
 
-    const val kotlin = "1.2.61"
+    const val kotlin = "1.3.10"
 
     const val minSdk = 14
     const val compiledSdk = 28
     const val targetSdk = compiledSdk
+    const val buildTools = "28.0.3"
 
     const val appCompat = "28.0.0-alpha3"
     const val playServiceMaps = "15.0.1"
@@ -18,6 +19,7 @@ object Versions {
 
     const val retrofit = "2.4.0"
     const val retrofitLoggingInterceptor = "3.9.1"
+    const val retrofitSynchronousAdapter = "0.4.0"
 
     // test
     const val junit = "4.12"
@@ -46,6 +48,7 @@ object Dependencies {
     const val retrofitGsonConverterLib = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofitRxJava2AdapterLib = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
     const val retrofitLoggingInterceptorLib = "com.squareup.okhttp3:logging-interceptor:${Versions.retrofitLoggingInterceptor}"
+    const val retrofitSynchronousAdapterLib = "com.jaredsburrows.retrofit:retrofit2-synchronous-adapter:${Versions.retrofitSynchronousAdapter}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

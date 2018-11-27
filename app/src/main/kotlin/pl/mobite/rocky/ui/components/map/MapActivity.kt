@@ -92,7 +92,7 @@ class MapActivity: AppCompatActivity(), OnMapReadyCallback {
         If we send intent immediately and in view state we have a list of places to display on map than app will crash
         with an exception:
 
-        "Map size can't be 0. Most likely, layout has not yet occured for the map view.  Either wait until layout has
+        "Map size can't be 0. Most likely, layout has not yet occurred for the map view.  Either wait until layout has
         occurred or use newLatLngBounds(LatLngBounds, int, int, int) which allows you to specify the map's dimensions."
 
         Looks like when onMapReady callback is invoked map is still not yet ready for updating its camera with

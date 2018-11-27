@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion Versions.compiledSdk
+    buildToolsVersion Versions.buildTools
+
     defaultConfig {
         project.ext.appName = 'rocky'
         applicationId "pl.mobite.rocky"
@@ -61,7 +63,7 @@ dependencies {
 
     implementation Dependencies.retrofitLib
     implementation Dependencies.retrofitGsonConverterLib
-    implementation Dependencies.retrofitRxJava2AdapterLib
+    implementation Dependencies.retrofitSynchronousAdapterLib
     implementation Dependencies.retrofitLoggingInterceptorLib
 
     testImplementation Dependencies.junitLib
